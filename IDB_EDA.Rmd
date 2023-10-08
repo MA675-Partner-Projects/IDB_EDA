@@ -1,0 +1,19 @@
+---
+title: "IDB_EDA"
+author: "Yuta Tsukumo"
+date: "2023-10-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+IDB <- read.csv("perfil_eleitor_secao_2022_ZZ.csv", sep = ";")
+# CSV file uses a delimiter other than a comma, so specify it using the sep parameter. 
+
+```
+
+
