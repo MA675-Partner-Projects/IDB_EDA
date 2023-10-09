@@ -13,7 +13,57 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 IDB <- read.csv("perfil_eleitor_secao_2022_ZZ.csv", sep = ";")
 # CSV file uses a delimiter other than a comma, so specify it using the sep parameter. 
-
 ```
 
+Data Check
+```{r}
+summary(IDB)
+
+unique(IDB$SG_UF)
+unique(IDB$CD_ESTADO_CIVIL)
+unique(IDB$DS_ESTADO_CIVIL)
+unique(IDB$CD_FAIXA_ETARIA)
+unique(IDB$DS_FAIXA_ETARIA)
+unique(IDB$CD_GRAU_ESCOLARIDADE)
+unique(IDB$DS_GRAU_ESCOLARIDADE)
+unique(IDB$QT_ELEITORES_BIOMETRIA)
+unique(IDB$QT_ELEITORES_DEFICIENCIA)
+unique(IDB$QT_ELEITORES_INC_NM_SOCIAL)
+```
+
+
+Variable selection (exclude variables with only one value or duplicate) and change names of variables
+```{r}
+# variable selection
+IDB_sub <- IDB |>
+  select(-DT_GERACAO, -HH_GERACAO, -ANO_ELEICAO, -SG_UF, -CD_MUN_SIT_BIOMETRICA, -DS_MUN_SIT_BIOMETRICA, -NR_ZONA, -DS_GENERO, -DS_ESTADO_CIVIL, -DS_FAIXA_ETARIA, -DS_GRAU_ESCOLARIDADE)
+
+# change names from Portugees to English
+IDB_sub <- IDB_sub |>
+  rename(
+    cd_muni = CD_MUNICIPIO,
+    name_muni = NM_MUNICIPIO,
+    num_sec = NR_SECAO,
+    num_stat = NR_LOCAL_VOTACAO,
+    cd_sex = CD_GENERO,
+    cd_marit = CD_ESTADO_CIVIL,
+    cd_age = CD_FAIXA_ETARIA,
+    cd_edu = CD_GRAU_ESCOLARIDADE,
+    elig_vote = QT_ELEITORES_PERFIL,
+    elig_bio = QT_ELEITORES_BIOMETRIA,
+    elig_dis = QT_ELEITORES_DEFICIENCIA,
+    elig_req = QT_ELEITORES_INC_NM_SOCIAL
+  )
+
+# correct class of variables
+IDB_sub <- IDB_sub |>
+  mutate(cd_muni = as.factor(cd_muni),
+         name_muni = as.factor(name_muni),
+         cd_sex = as.factor(cd_sex),
+         cd_marit = as.factor(cd_marit),
+         cd_age = as.factor(cd_age),
+         cd_edu = as.factor(cd_edu),
+         )
+summary(IDB_sub)
+```
 
