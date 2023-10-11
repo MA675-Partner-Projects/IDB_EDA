@@ -1,0 +1,575 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={IDB\_EDA},
+  pdfauthor={Yuta Tsukumo},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{IDB\_EDA}
+\author{Yuta Tsukumo}
+\date{2023-10-07}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching core tidyverse packages ------------------------ tidyverse 2.0.0 --
+## v dplyr     1.1.2     v readr     2.1.4
+## v forcats   1.0.0     v stringr   1.5.0
+## v ggplot2   3.4.3     v tibble    3.2.1
+## v lubridate 1.9.2     v tidyr     1.3.0
+## v purrr     1.0.2     
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+## i Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{IDB }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"perfil\_eleitor\_secao\_2022\_ZZ.csv"}\NormalTok{,　}\AttributeTok{sep =} \StringTok{";"}\NormalTok{)}
+\CommentTok{\# CSV file uses a delimiter other than a comma, so specify it using the sep parameter. }
+\end{Highlighting}
+\end{Shaded}
+
+Data Check
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(IDB)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   DT_GERACAO         HH_GERACAO         ANO_ELEICAO      SG_UF          
+##  Length:276667      Length:276667      Min.   :2022   Length:276667     
+##  Class :character   Class :character   1st Qu.:2022   Class :character  
+##  Mode  :character   Mode  :character   Median :2022   Mode  :character  
+##                                        Mean   :2022                     
+##                                        3rd Qu.:2022                     
+##                                        Max.   :2022                     
+##   CD_MUNICIPIO   NM_MUNICIPIO       CD_MUN_SIT_BIOMETRICA DS_MUN_SIT_BIOMETRICA
+##  Min.   :29173   Length:276667      Min.   :0             Length:276667        
+##  1st Qu.:29807   Class :character   1st Qu.:0             Class :character     
+##  Median :30120   Mode  :character   Median :0             Mode  :character     
+##  Mean   :30474                      Mean   :0                                  
+##  3rd Qu.:30376                      3rd Qu.:0                                  
+##  Max.   :99473                      Max.   :0                                  
+##     NR_ZONA     NR_SECAO    NR_LOCAL_VOTACAO   CD_GENERO      DS_GENERO        
+##  Min.   :1   Min.   :   1   Min.   :1015     Min.   :2.000   Length:276667     
+##  1st Qu.:1   1st Qu.: 516   1st Qu.:1015     1st Qu.:2.000   Class :character  
+##  Median :1   Median :1102   Median :1023     Median :4.000   Mode  :character  
+##  Mean   :1   Mean   :1327   Mean   :1049     Mean   :3.118                     
+##  3rd Qu.:1   3rd Qu.:1843   3rd Qu.:1066     3rd Qu.:4.000                     
+##  Max.   :1   Max.   :3400   Max.   :1589     Max.   :4.000                     
+##  CD_ESTADO_CIVIL DS_ESTADO_CIVIL    CD_FAIXA_ETARIA DS_FAIXA_ETARIA   
+##  Min.   :1.000   Length:276667      Min.   :  -3    Length:276667     
+##  1st Qu.:1.000   Class :character   1st Qu.:3034    Class :character  
+##  Median :3.000   Mode  :character   Median :4549    Mode  :character  
+##  Mean   :2.903                      Mean   :4421                      
+##  3rd Qu.:3.000                      3rd Qu.:5559                      
+##  Max.   :9.000                      Max.   :9999                      
+##  CD_GRAU_ESCOLARIDADE DS_GRAU_ESCOLARIDADE QT_ELEITORES_PERFIL
+##  Min.   :0.000        Length:276667        Min.   : 1.00      
+##  1st Qu.:5.000        Class :character     1st Qu.: 1.00      
+##  Median :6.000        Mode  :character     Median : 1.00      
+##  Mean   :6.094                             Mean   : 2.52      
+##  3rd Qu.:8.000                             3rd Qu.: 3.00      
+##  Max.   :8.000                             Max.   :73.00      
+##  QT_ELEITORES_BIOMETRIA QT_ELEITORES_DEFICIENCIA QT_ELEITORES_INC_NM_SOCIAL
+##  Min.   : 0.0000        Min.   :0.00000          Min.   :0.00e+00          
+##  1st Qu.: 0.0000        1st Qu.:0.00000          1st Qu.:0.00e+00          
+##  Median : 0.0000        Median :0.00000          Median :0.00e+00          
+##  Mean   : 0.4685        Mean   :0.01278          Mean   :3.25e-05          
+##  3rd Qu.: 0.0000        3rd Qu.:0.00000          3rd Qu.:0.00e+00          
+##  Max.   :65.0000        Max.   :3.00000          Max.   :1.00e+00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{SG\_UF)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "ZZ"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{CD\_ESTADO\_CIVIL)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1 3 9 5 7
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{DS\_ESTADO\_CIVIL)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "SOLTEIRO"               "CASADO"                 "DIVORCIADO"            
+## [4] "VI\xdaVO"               "SEPARADO JUDICIALMENTE"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{CD\_FAIXA\_ETARIA)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 2124 2529 3034 3539 4044 6569 5054 5559 7579 6064 7074 2000 4549 1600 1800
+## [16] 1900 9094 8589 1700 8084 9999 9599   -3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{DS\_FAIXA\_ETARIA)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "21 a 24 anos                  "    "25 a 29 anos                  "   
+##  [3] "30 a 34 anos                  "    "35 a 39 anos                  "   
+##  [5] "40 a 44 anos                  "    "65 a 69 anos                  "   
+##  [7] "50 a 54 anos                  "    "55 a 59 anos                  "   
+##  [9] "75 a 79 anos                  "    "60 a 64 anos                  "   
+## [11] "70 a 74 anos                  "    "20 anos                       "   
+## [13] "45 a 49 anos                  "    "16 anos                       "   
+## [15] "18 anos                       "    "19 anos                       "   
+## [17] "90 a 94 anos                  "    "85 a 89 anos                  "   
+## [19] "17 anos                       "    "80 a 84 anos                  "   
+## [21] "100 anos ou mais              "    "95 a 99 anos                  "   
+## [23] "Inv\xe1lido                      "
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{NM\_MUNICIPIO)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   [1] "KATMANDU"                "ABIDJ\xc3"              
+##   [3] "ABU DHABI"               "ACCRA"                  
+##   [5] "AM\xc3"                  "ANCARA"                 
+##   [7] "ARGEL"                   "ARTIGAS"                
+##   [9] "ASSUN\xc7\xc3O"          "LISBOA"                 
+##  [11] "NOVA YORK"               "OSLO"                   
+##  [13] "OTTAWA"                  "PANAMA"                 
+##  [15] "PARAMARIBO"              "FARO"                   
+##  [17] "SARAJEVO"                "BELMOPAN"               
+##  [19] "CONACRI"                 "COTONOU"                
+##  [21] "DAR ES SALAAM"           "IEREVAN"                
+##  [23] "MENDOZA"                 "ZAGREB"                 
+##  [25] "VANCOUVER"               "ATLANTA"                
+##  [27] "S\xc3O FRANCISCO"        "S\xc3O JOS\xc9"         
+##  [29] "S\xc3O SALVADOR"         "SEUL"                   
+##  [31] "S\xd3FIA"                "SYDNEY"                 
+##  [33] "MIL\xc3O"                "NAG\xd3IA"              
+##  [35] "MADRI"                   "MAN\xc1GUA"             
+##  [37] "MANILA"                  "MAPUTO"                 
+##  [39] "MEXICO"                  "MIAMI"                  
+##  [41] "LONDRES"                 "MASCATE"                
+##  [43] "BAKU"                    "LIUBLIANA"              
+##  [45] "BRAZZAVILLE"             "BRATISLAVA"             
+##  [47] "S\xc3O TOM\xc9"          "ASTANA"                 
+##  [49] "MALABO"                  "UAGADUGU"               
+##  [51] "ISTAMBUL"                "NICOSIA"                
+##  [53] "GUATEMALA"               "TBILISI"                
+##  [55] "TIRANA"                  "SAINT JOHNS"            
+##  [57] "PUERTO IGUAZ\xda"        "BAGD\xc1"               
+##  [59] "NASSAU"                  "ABUJA"                  
+##  [61] "COBIJA"                  "PUERTO QUIJARRO"        
+##  [63] "RIVERA"                  "VATICANO"               
+##  [65] "LUSACA"                  "TALIN"                  
+##  [67] "ADIS ABEBA"              "ST GEORGES DE LOYAPOCK" 
+##  [69] "LILONGUE"                "BAMAKO"                 
+##  [71] "YANGON"                  "CASTRIES"               
+##  [73] "KINGSTON-JAMAICA"        "BAREIN"                 
+##  [75] "T\xd3QUIO"               "MONTEVID\xc9U"          
+##  [77] "MONTREAL"                "ATENAS"                 
+##  [79] "BANGKOK"                 "BARCELONA"              
+##  [81] "PARIS"                   "NAIR\xd3BI"             
+##  [83] "NOVA DELHI"              "LOS ANGELES"            
+##  [85] "BERLIM"                  "BISSAU"                 
+##  [87] "BOGOT\xc1"               "BOSTON"                 
+##  [89] "PASO LOS LIBRES"         "PEDRO JUAN CABALLERO"   
+##  [91] "PEQUIM"                  "PORT OF SPAIN"          
+##  [93] "PORTO PR\xcdNCIPE"       "PORTO"                  
+##  [95] "TAIP\xc9"                "TEER\xc3"               
+##  [97] "TEGUCIGALPA"             "TEL AVIV"               
+##  [99] "LUANDA"                  "BUENOS AIRES"           
+## [101] "CAIENA"                  "CAIRO"                  
+## [103] "CAMBERRA"                "CARACAS"                
+## [105] "CHICAGO"                 "BEIRUTE"                
+## [107] "BELGRADO"                "LOM\xc9"                
+## [109] "TORONTO"                 "MOSCOU"                 
+## [111] "MUMBAI"                  "MUNIQUE"                
+## [113] "CANT\xc3O"               "GABORONE"               
+## [115] "TR\xcdPOLI"              "TUNIS"                  
+## [117] "VARS\xd3VIA"             "VIENA"                  
+## [119] "PRAGA"                   "PRAIA"                  
+## [121] "PRET\xd3RIA"             "QUITO"                  
+## [123] "WASHINGTON"              "CHUY"                   
+## [125] "CIDADE DO CABO"          "SINGAPURA"              
+## [127] "CIUDAD DEL ESTE"         "RABAT"                  
+## [129] "RAMALLAH"                "RIADE"                  
+## [131] "RIO BRANCO"              "ROMA"                   
+## [133] "WELLINGTON"              "WINDHOEK"               
+## [135] "XANGAI"                  "ZURIQUE"                
+## [137] "DUBLIN"                  "ENCARNACI\xd3N"         
+## [139] "ESTOCOLMO"               "FRANKFURT"              
+## [141] "BRIDGETOWN"              "BRUXELAS"               
+## [143] "AMSTERD\xc3"             "SALTO DEL GUAIR\xc1"    
+## [145] "CIUDAD GUAYANA"          "COCHABAMBA"             
+## [147] "CONCEPCI\xd3N"           "COPENHAGUE"             
+## [149] "C\xd3RDOBA"              "DACAR"                  
+## [151] "DAMASCO"                 "D\xcdLI"                
+## [153] "DOHA"                    "BUCARESTE"              
+## [155] "BUDAPESTE"               "SANTA CRUZ DE LA SIERRA"
+## [157] "SANTIAGO"                "S\xc3O DOMINGOS"        
+## [159] "HARTFORD"                "COLOMBO"                
+## [161] "GENEBRA"                 "GEORGETOWN"             
+## [163] "HAMAMATSU"               "HAN\xd3I"               
+## [165] "HARARE"                  "HAVANA"                 
+## [167] "HELSINQUE"               "HONG KONG"              
+## [169] "HOUSTON"                 "IAUND\xca"              
+## [171] "IQUITOS"                 "ISLAMABADE"             
+## [173] "JACARTA"                 "KIEV"                   
+## [175] "KINSHASA"                "KUAITE"                 
+## [177] "KUALA LUMPUR"            "LA PAZ"                 
+## [179] "LAGOS"                   "LIBREVILLE"             
+## [181] "LIMA"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{CD\_GRAU\_ESCOLARIDADE) }\CommentTok{\# 181 cities}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 5 6 7 8 4 3 2 1 0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{DS\_GRAU\_ESCOLARIDADE)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "ENSINO M\xc9DIO INCOMPLETO"    "ENSINO M\xc9DIO COMPLETO"     
+## [3] "SUPERIOR INCOMPLETO"           "SUPERIOR COMPLETO"            
+## [5] "ENSINO FUNDAMENTAL COMPLETO"   "ENSINO FUNDAMENTAL INCOMPLETO"
+## [7] "L\xca E ESCREVE"               "ANALFABETO"                   
+## [9] "N\xc3O INFORMADO"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{QT\_ELEITORES\_BIOMETRIA)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  0  1  2  3 11  4  9 10 13  7  6  8  5 25 15 24 22 14 27 34 20 32 12 31 19
+## [26] 16 17 18 29 26 28 21 38 43 23 39 30 35 50 41 65 42 61 51 46 54 44 58 49 37
+## [51] 36 33 47
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{QT\_ELEITORES\_DEFICIENCIA)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0 1 2 3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{unique}\NormalTok{(IDB}\SpecialCharTok{$}\NormalTok{QT\_ELEITORES\_INC\_NM\_SOCIAL)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0 1
+\end{verbatim}
+
+Variable selection (exclude variables with only one value or duplicate)
+and change names of variables
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# variable selection}
+\NormalTok{IDB\_sub }\OtherTok{\textless{}{-}}\NormalTok{ IDB }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{DT\_GERACAO, }\SpecialCharTok{{-}}\NormalTok{HH\_GERACAO, }\SpecialCharTok{{-}}\NormalTok{ANO\_ELEICAO, }\SpecialCharTok{{-}}\NormalTok{SG\_UF, }\SpecialCharTok{{-}}\NormalTok{CD\_MUN\_SIT\_BIOMETRICA, }\SpecialCharTok{{-}}\NormalTok{DS\_MUN\_SIT\_BIOMETRICA, }\SpecialCharTok{{-}}\NormalTok{NR\_ZONA, }\SpecialCharTok{{-}}\NormalTok{CD\_GENERO, }\SpecialCharTok{{-}}\NormalTok{DS\_ESTADO\_CIVIL, }\SpecialCharTok{{-}}\NormalTok{DS\_FAIXA\_ETARIA, }\SpecialCharTok{{-}}\NormalTok{DS\_GRAU\_ESCOLARIDADE)}
+
+\CommentTok{\# change names from Portuguese to English}
+\NormalTok{IDB\_sub }\OtherTok{\textless{}{-}}\NormalTok{ IDB\_sub }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{rename}\NormalTok{(}
+    \AttributeTok{cd\_muni =}\NormalTok{ CD\_MUNICIPIO,}
+    \AttributeTok{name\_muni =}\NormalTok{ NM\_MUNICIPIO,}
+    \AttributeTok{num\_sec =}\NormalTok{ NR\_SECAO,}
+    \AttributeTok{num\_stat =}\NormalTok{ NR\_LOCAL\_VOTACAO,}
+    \AttributeTok{sex =}\NormalTok{ DS\_GENERO,}
+    \AttributeTok{cd\_marit =}\NormalTok{ CD\_ESTADO\_CIVIL,}
+    \AttributeTok{cd\_age =}\NormalTok{ CD\_FAIXA\_ETARIA,}
+    \AttributeTok{cd\_edu =}\NormalTok{ CD\_GRAU\_ESCOLARIDADE,}
+    \AttributeTok{elig\_vote =}\NormalTok{ QT\_ELEITORES\_PERFIL,}
+    \AttributeTok{elig\_bio =}\NormalTok{ QT\_ELEITORES\_BIOMETRIA,}
+    \AttributeTok{elig\_dis =}\NormalTok{ QT\_ELEITORES\_DEFICIENCIA,}
+    \AttributeTok{elig\_req =}\NormalTok{ QT\_ELEITORES\_INC\_NM\_SOCIAL}
+\NormalTok{  )}
+
+\CommentTok{\# correct class of variables}
+\NormalTok{IDB\_sub }\OtherTok{\textless{}{-}}\NormalTok{ IDB\_sub }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{cd\_muni =} \FunctionTok{as.factor}\NormalTok{(cd\_muni),}
+         \AttributeTok{name\_muni =} \FunctionTok{as.factor}\NormalTok{(name\_muni),}
+         \AttributeTok{sex =} \FunctionTok{as.factor}\NormalTok{(sex),}
+         \AttributeTok{cd\_marit =} \FunctionTok{as.factor}\NormalTok{(cd\_marit),}
+         \AttributeTok{cd\_age =} \FunctionTok{as.factor}\NormalTok{(cd\_age),}
+         \AttributeTok{cd\_edu =} \FunctionTok{as.factor}\NormalTok{(cd\_edu),}
+\NormalTok{         )}
+
+\CommentTok{\# create another educational category}
+
+\NormalTok{IDB\_sub }\OtherTok{\textless{}{-}}\NormalTok{ IDB\_sub }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{cd\_edu }\SpecialCharTok{==} \StringTok{"0"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}   \CommentTok{\# remove samples without information regarding education}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{educ\_cat =} \FunctionTok{if\_else}\NormalTok{(cd\_edu }\SpecialCharTok{==} \DecValTok{8}\NormalTok{, }\StringTok{"Higher"}\NormalTok{, }\FunctionTok{if\_else}\NormalTok{(cd\_edu }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{,}\DecValTok{6}\NormalTok{) , }\StringTok{"Highshool"}\NormalTok{, }\StringTok{"Other"}\NormalTok{)))}
+
+\CommentTok{\# create another age category}
+\NormalTok{IDB\_sub }\OtherTok{\textless{}{-}}\NormalTok{ IDB\_sub }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{cd\_age }\SpecialCharTok{==} \StringTok{"{-}3"}\NormalTok{) }\SpecialCharTok{|\textgreater{}} \CommentTok{\# remove samples without information regarding age}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{age\_cat =} \FunctionTok{if\_else}\NormalTok{(cd\_age }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1600}\NormalTok{, }\DecValTok{1700}\NormalTok{, }\DecValTok{1800}\NormalTok{, }\DecValTok{1900}\NormalTok{), }\StringTok{"Under20"}\NormalTok{, }\FunctionTok{if\_else}\NormalTok{(cd\_age }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{6064}\NormalTok{, }\DecValTok{6569}\NormalTok{, }\DecValTok{7074}\NormalTok{, }\DecValTok{7579}\NormalTok{, }\DecValTok{8084}\NormalTok{, }\DecValTok{8589}\NormalTok{, }\DecValTok{9094}\NormalTok{, }\DecValTok{9599}\NormalTok{, }\DecValTok{9999}\NormalTok{) , }\StringTok{"Over60"}\NormalTok{, }\StringTok{"Other"}\NormalTok{)))}
+
+
+\CommentTok{\# change values from Portugees to English}
+\NormalTok{IDB\_sub}\SpecialCharTok{$}\NormalTok{sex }\OtherTok{\textless{}{-}} \FunctionTok{recode}\NormalTok{(IDB\_sub}\SpecialCharTok{$}\NormalTok{sex, }\StringTok{"FEMININO"} \OtherTok{=} \StringTok{"female"}\NormalTok{, }\StringTok{"MASCULINO"}\OtherTok{=} \StringTok{"male"}\NormalTok{)}
+
+\NormalTok{IDB\_sub}\SpecialCharTok{$}\NormalTok{cd\_marit }\OtherTok{\textless{}{-}} \FunctionTok{recode}\NormalTok{(IDB\_sub}\SpecialCharTok{$}\NormalTok{cd\_marit, }\StringTok{"1"} \OtherTok{=} \StringTok{"Single"}\NormalTok{, }\StringTok{"3"} \OtherTok{=} \StringTok{"Married"}\NormalTok{, }\StringTok{"5"} \OtherTok{=} \StringTok{"Widowed"}\NormalTok{, }\StringTok{"7"} \OtherTok{=} \StringTok{"Legally Separated"}\NormalTok{, }\StringTok{"9"} \OtherTok{=} \StringTok{"Divorced"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+Pick up top 10 cities with large participants \# change categorical
+values (name\_muni).. Next Step
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{top10\_cities }\OtherTok{\textless{}{-}}\NormalTok{ IDB\_sub }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{group\_by}\NormalTok{(name\_muni) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{count =} \FunctionTok{n}\NormalTok{(), }\AttributeTok{.groups =} \StringTok{"drop\_last"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(count))　}\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{head}\NormalTok{(}\DecValTok{10}\NormalTok{)}
+
+\NormalTok{IDB\_top10 }\OtherTok{\textless{}{-}}\NormalTok{ IDB\_sub }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{filter}\NormalTok{(name\_muni }\SpecialCharTok{\%in\%}\NormalTok{ top10\_cities}\SpecialCharTok{$}\NormalTok{name\_muni)}
+
+\NormalTok{IDB\_top10}\SpecialCharTok{$}\NormalTok{name\_muni }\OtherTok{\textless{}{-}} \FunctionTok{recode}\NormalTok{(IDB\_top10}\SpecialCharTok{$}\NormalTok{name\_muni, }\StringTok{"LISBOA"} \OtherTok{=} \StringTok{"Lisbon"}\NormalTok{, }\StringTok{"NOVA YORK"} \OtherTok{=} \StringTok{"New York"}\NormalTok{, }\StringTok{"MIL}\SpecialCharTok{\textbackslash{}xc3}\StringTok{O"} \OtherTok{=} \StringTok{"Milan"}\NormalTok{, }\StringTok{"NAG}\SpecialCharTok{\textbackslash{}xd3}\StringTok{IA"} \OtherTok{=} \StringTok{"Nagoya"}\NormalTok{, }\StringTok{"MADRI"} \OtherTok{=} \StringTok{"Madrid"}\NormalTok{, }\StringTok{"MIAMI"} \OtherTok{=} \StringTok{"Miami"}\NormalTok{, }
+\StringTok{"LONDRES"} \OtherTok{=} \StringTok{"London"}\NormalTok{, }\StringTok{"T}\SpecialCharTok{\textbackslash{}xd3}\StringTok{QUIO"} \OtherTok{=} \StringTok{"Tokyo"}\NormalTok{, }\StringTok{"BOSTON"} \OtherTok{=} \StringTok{"Boston"}\NormalTok{, }\StringTok{"PORTO"} \OtherTok{=} \StringTok{"Porto"}\NormalTok{) }
+
+\NormalTok{IDB\_top10 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(name\_muni) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Total =} \FunctionTok{n}\NormalTok{()) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(Total))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 10 x 2
+##    name_muni Total
+##    <fct>     <int>
+##  1 Lisbon    18243
+##  2 Boston    16840
+##  3 Miami     16693
+##  4 Nagoya    16417
+##  5 Tokyo     13276
+##  6 New York  12715
+##  7 London    12570
+##  8 Porto     11774
+##  9 Milan      9117
+## 10 Madrid     8493
+\end{verbatim}
+
+Create graph
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# by cities by sex}
+\NormalTok{IDB\_top10 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(name\_muni, sex) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Total =} \FunctionTok{n}\NormalTok{(), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(name\_muni, }\SpecialCharTok{{-}}\NormalTok{Total), }\AttributeTok{y =}\NormalTok{ Total, }\AttributeTok{fill =}\NormalTok{ sex)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_col}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Top{-}10 Cities"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Total"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{max}\NormalTok{(}\DecValTok{20000}\NormalTok{), }\AttributeTok{by =} \DecValTok{2000}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{IDB_EDA_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# by cities by marital status}
+\NormalTok{IDB\_top10 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(name\_muni, cd\_marit) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Total =} \FunctionTok{n}\NormalTok{(), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(name\_muni, }\SpecialCharTok{{-}}\NormalTok{Total), }\AttributeTok{y =}\NormalTok{ Total, }\AttributeTok{fill =}\NormalTok{ cd\_marit)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_col}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Top{-}10 Cities"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Total"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{max}\NormalTok{(}\DecValTok{20000}\NormalTok{), }\AttributeTok{by =} \DecValTok{2000}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{IDB_EDA_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# by cities by educational categories}
+\NormalTok{IDB\_top10 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(name\_muni, educ\_cat) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Total =} \FunctionTok{n}\NormalTok{(), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(name\_muni, }\SpecialCharTok{{-}}\NormalTok{Total), }\AttributeTok{y =}\NormalTok{ Total, }\AttributeTok{fill =}\NormalTok{ educ\_cat)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_col}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Top{-}10 Cities"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Total"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{max}\NormalTok{(}\DecValTok{20000}\NormalTok{), }\AttributeTok{by =} \DecValTok{2000}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{IDB_EDA_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# by cities by age categories}
+\NormalTok{IDB\_top10 }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{group\_by}\NormalTok{(name\_muni, age\_cat) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{Total =} \FunctionTok{n}\NormalTok{(), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(name\_muni, }\SpecialCharTok{{-}}\NormalTok{Total), }\AttributeTok{y =}\NormalTok{ Total, }\AttributeTok{fill =}\NormalTok{ age\_cat)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_col}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Top{-}10 Cities"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Total"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{max}\NormalTok{(}\DecValTok{20000}\NormalTok{), }\AttributeTok{by =} \DecValTok{2000}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{IDB_EDA_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+\end{document}

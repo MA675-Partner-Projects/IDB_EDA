@@ -2,7 +2,9 @@
 title: "IDB_EDA"
 author: "Yuta Tsukumo"
 date: "2023-10-07"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -27,7 +29,8 @@ unique(IDB$CD_ESTADO_CIVIL)
 unique(IDB$DS_ESTADO_CIVIL)
 unique(IDB$CD_FAIXA_ETARIA)
 unique(IDB$DS_FAIXA_ETARIA)
-unique(IDB$CD_GRAU_ESCOLARIDADE)
+unique(IDB$NM_MUNICIPIO) # 181 cities
+unique(IDB$CD_GRAU_ESCOLARIDADE) 
 unique(IDB$DS_GRAU_ESCOLARIDADE)
 unique(IDB$QT_ELEITORES_BIOMETRIA)
 unique(IDB$QT_ELEITORES_DEFICIENCIA)
@@ -67,8 +70,25 @@ IDB_sub <- IDB_sub |>
          cd_age = as.factor(cd_age),
          cd_edu = as.factor(cd_edu),
          )
-summary(IDB_sub)
+
+# create another educational category
+
+IDB_sub <- IDB_sub |>
+  filter(!cd_edu == "0") |>   # remove samples without information regarding education
+  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "Highshool", "Other")))
+
+# create another age category
+IDB_sub <- IDB_sub |>
+  filter(!cd_age == "-3") |> # remove samples without information regarding age
+  mutate(age_cat = if_else(cd_age %in% c(1600, 1700, 1800, 1900), "Under20", if_else(cd_age %in% c(6064, 6569, 7074, 7579, 8084, 8589, 9094, 9599, 9999) , "Over60", "Other")))
+
+
+# change values from Portugees to English
+IDB_sub$sex <- recode(IDB_sub$sex, "FEMININO" = "female", "MASCULINO"= "male")
+
+IDB_sub$cd_marit <- recode(IDB_sub$cd_marit, "1" = "Single", "3" = "Married", "5" = "Widowed", "7" = "Legally Separated", "9" = "Divorced") 
 ```
+
 Pick up top 10 cities with large participants
 # change categorical values (name_muni).. Next Step
 ```{r}
@@ -84,18 +104,58 @@ IDB_top10 <- IDB_sub |>
 IDB_top10$name_muni <- recode(IDB_top10$name_muni, "LISBOA" = "Lisbon", "NOVA YORK" = "New York", "MIL\xc3O" = "Milan", "NAG\xd3IA" = "Nagoya", "MADRI" = "Madrid", "MIAMI" = "Miami", 
 "LONDRES" = "London", "T\xd3QUIO" = "Tokyo", "BOSTON" = "Boston", "PORTO" = "Porto") 
 
-IDB_top10$sex <- recode(IDB_top10$sex, "FEMININO" = "female", "MASCULINO"= "male")
-unique(IDB_top10$name_muni)
+IDB_top10 |>
+  group_by(name_muni) |>
+  summarise(Total = n()) |>
+  arrange(desc(Total))
 
 ```
 
-Create grapfh
+Create graph
 ```{r}
-# Bar chart
-ggplot(IDB_top10, aes(x = name_muni, color = sex)) +
-  geom_bar() +
-  labs(x = "Top-10 Cities", y = "Count") +
-  theme_minimal() 
+# by cities by sex
+IDB_top10 |>
+  group_by(name_muni, sex) |>
+  summarise(Total = n(), .groups = "drop") |>
+  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = sex)) +
+  geom_col() +
+  labs(x = "Top-10 Cities", y = "Total") +
+  scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
+  theme_minimal()
+```
 
+```{r}
+# by cities by marital status
+IDB_top10 |>
+  group_by(name_muni, cd_marit) |>
+  summarise(Total = n(), .groups = "drop") |>
+  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = cd_marit)) +
+  geom_col() +
+  labs(x = "Top-10 Cities", y = "Total") +
+  scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
+  theme_minimal()
+```
+
+```{r}
+# by cities by educational categories
+IDB_top10 |>
+  group_by(name_muni, educ_cat) |>
+  summarise(Total = n(), .groups = "drop") |>
+  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = educ_cat)) +
+  geom_col() +
+  labs(x = "Top-10 Cities", y = "Total") +
+  scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
+  theme_minimal()
+```
+```{r}
+# by cities by age categories
+IDB_top10 |>
+  group_by(name_muni, age_cat) |>
+  summarise(Total = n(), .groups = "drop") |>
+  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = age_cat)) +
+  geom_col() +
+  labs(x = "Top-10 Cities", y = "Total") +
+  scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
+  theme_minimal()
 ```
 
