@@ -75,12 +75,17 @@ IDB_sub <- IDB_sub |>
 
 IDB_sub <- IDB_sub |>
   filter(!cd_edu == "0") |>   # remove samples without information regarding education
-  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "Highshool", "Other")))
+  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "Highshool", "Incomplete high school")))
 
-# create another age category
+# create another age category"age_cat1"
 IDB_sub <- IDB_sub |>
   filter(!cd_age == "-3") |> # remove samples without information regarding age
-  mutate(age_cat = if_else(cd_age %in% c(1600, 1700, 1800, 1900), "Under20", if_else(cd_age %in% c(6064, 6569, 7074, 7579, 8084, 8589, 9094, 9599, 9999) , "Over60", "Other")))
+  mutate(age_cat1 = if_else(cd_age %in% c(1600, 1700, 1800, 1900), "10s", if_else(cd_age %in% c(2000, 2124,  2529), "20s", ifelse(cd_age %in% c(3034, 3539), "30s", ifelse(cd_age %in% c(4044, 4549), "40s", ifelse(cd_age %in% c(5054, 5559), "50s", ifelse(cd_age %in% c(6064, 6569), "60s", ifelse(cd_age %in% c(7074, 7579), "70s", ifelse(cd_age %in% c(8084, 8589), "80s", ifelse(cd_age %in% c(9094, 9599), "90s", "100+"))))))))))
+
+# create another age category"age_cat2"
+IDB_sub <- IDB_sub |>
+  filter(!cd_age == "-3") |> # remove samples without information regarding age
+  mutate(age_cat2 = if_else(cd_age %in% c(1600, 1700, 1800, 1900), "Under20", if_else(cd_age %in% c(6569, 7074, 7579, 8084, 8589, 9094, 9599, 9999) , "Elderly", "Adult")))
 
 
 # change values from Portugees to English
@@ -119,9 +124,14 @@ IDB_top10 |>
   summarise(Total = n(), .groups = "drop") |>
   ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = sex)) +
   geom_col() +
-  labs(x = "Top-10 Cities", y = "Total") +
+  labs(title = "Voter Demographics in Major Cities by Gender",
+       x = "Top 10 cities with the highest number of voters", 
+       y = "Total number of voters") +
   scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
-  theme_minimal()
+  guides(fill = guide_legend(title = "Gender")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
 ```
 
 ```{r}
@@ -131,9 +141,13 @@ IDB_top10 |>
   summarise(Total = n(), .groups = "drop") |>
   ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = cd_marit)) +
   geom_col() +
-  labs(x = "Top-10 Cities", y = "Total") +
+  labs(title = "Voter Demographics in Major Cities by Marital Status",
+       x = "Top 10 cities with the highest number of voters", 
+       y = "Total number of voters") +
   scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
-  theme_minimal()
+  guides(fill = guide_legend(title = "Marital Status")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
 ```{r}
@@ -143,19 +157,45 @@ IDB_top10 |>
   summarise(Total = n(), .groups = "drop") |>
   ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = educ_cat)) +
   geom_col() +
-  labs(x = "Top-10 Cities", y = "Total") +
+  labs(title = "Voter Demographics in Major Cities by Educational Status",
+       x = "Top 10 cities with the highest number of voters", 
+       y = "Total number of voters") +
   scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
-  theme_minimal()
+  guides(fill = guide_legend(title = "Educational Status")) +
+  theme_minimal()　+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 ```{r}
 # by cities by age categories
 IDB_top10 |>
-  group_by(name_muni, age_cat) |>
+  group_by(name_muni, age_cat2) |>
   summarise(Total = n(), .groups = "drop") |>
-  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = age_cat)) +
+  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = age_cat2)) +
   geom_col() +
-  labs(x = "Top-10 Cities", y = "Total") +
+  labs(title = "Voter Demographics in Major Cities by Age Category",
+       x = "Top 10 cities with the highest number of voters", 
+       y = "Total number of voters") +
   scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
-  theme_minimal()
+  guides(fill = guide_legend(title = "Age Category")) +
+  theme_minimal()　+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+```
+
+```{r}
+# pie chart by age categories
+IDB_top10 |>
+  filter(name_muni == "Boston") |>
+  ggplot(aes(x = "", fill = age_cat1)) +
+  geom_bar(width = 1, position = "fill") +
+  coord_polar(theta = "y") +
+  labs(title = "Voter Demographics in Boston by Age Category",
+       y = "Composition of Each Age Group") +
+  guides(fill = guide_legend(title = "Age Category")) +
+  theme_minimal() 
+  # theme(legend.position = "bottom") 
+
+
+
+
 ```
 
