@@ -248,6 +248,5 @@ IDB_top10 |>
         axis.title.x = element_text(size = 14),
         axis.title.y = element_blank(),
         legend.text = element_text(size = 14))
-       
 ```
 
