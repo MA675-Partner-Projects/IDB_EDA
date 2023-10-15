@@ -78,7 +78,7 @@ IDB_sub <- IDB_sub |>
 # create another educational category
 IDB_sub <- IDB_sub |>
   filter(!cd_edu == "0") |>   # remove samples without information regarding education
-  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "Highshool", "Incomplete high school")))
+  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "Highshool", "Incomplete High School")))
 
 # create another age category"age_cat1"
 IDB_sub <- IDB_sub |>
@@ -102,55 +102,35 @@ IDB_sub$cd_marit <- recode(IDB_sub$cd_marit, "1" = "Single", "3" = "Married", "5
 Accounting for the number of eligible voters in each row, create long format data frame.
 
 ```{r}
-IDB_sub_long <- tibble()
-
-for (i in 1:nrow(IDB_sub)) {
-  row <- IDB_sub[i, ]
-  number <- row$num_eligvite
+# The following code is too heavy for large data.
+# IDB_sub_long <- data.frame()
+# for (i in 1:nrow(IDB_sub)) {
+#  row <- IDB_sub[i, ]
+#  number <- row$num_eligvote
   
-  for(j in 1:number) {
-    IDB_sub_long <- rbind(IDB_sub_long, row)
-  }
-}
-
-data <- data.frame(
-  name = c("A", "B", "C"),
-  number = c(3, 2, 4)
-)
-
-# 新しいデータフレームを初期化
-new_data <- data.frame()
-
-# 各行のコピーと増加
-for (i in 1:nrow(data)) {
-  row <- data[i, ]
-  number <- row$numbert
-  
-  # numberの値に応じて行を増やす
-  for (j in 1:number) {
-    new_data <- rbind(new_data, row)
-  }
-}
-
-# 新しいデータフレームを表示
-print(new_data)
-。
+#  for (j in 1:number) {
+#    IDB_sub_long <- rbind(IDB_sub_long, row)
+#  }
+# }
 
 
+# Duplicate each row to create a new data frame
+IDB_sub_long <- IDB_sub[rep(seq_len(nrow(IDB_sub)), IDB_sub$num_eligvote),]
+
+# Reset row names
+row.names(IDB_sub_long) <- NULL
 ```
 
 
-
 Pick up top 10 cities with large participants
-# change categorical values (name_muni).. Next Step
 ```{r}
-top10_cities <- IDB_sub |> 
+top10_cities <- IDB_sub_long |> 
   group_by(name_muni) |>
   summarise(count = n(), .groups = "drop_last") |>
   arrange(desc(count))　|>
   head(10)
 
-IDB_top10 <- IDB_sub |>
+IDB_top10 <- IDB_sub_long |>
   filter(name_muni %in% top10_cities$name_muni)
 
 IDB_top10$name_muni <- recode(IDB_top10$name_muni, "LISBOA" = "Lisbon", "NOVA YORK" = "New York", "MIL\xc3O" = "Milan", "NAG\xd3IA" = "Nagoya", "MADRI" = "Madrid", "MIAMI" = "Miami", 
@@ -174,10 +154,16 @@ IDB_top10 |>
   labs(title = "Voter Demographics in Major Cities by Gender",
        x = "Top 10 cities with the highest number of voters", 
        y = "Total number of voters") +
-  scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
+  scale_y_continuous(breaks = seq(0, max(46000), by = 5000)) +
   guides(fill = guide_legend(title = "Gender")) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  theme(plot.title = element_text(size = 20),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 14),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14))
 
 ```
 
@@ -187,14 +173,20 @@ IDB_top10 |>
   group_by(name_muni, cd_marit) |>
   summarise(Total = n(), .groups = "drop") |>
   ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = cd_marit)) +
-  geom_col() +
+  geom_col(position = "dodge") +
   labs(title = "Voter Demographics in Major Cities by Marital Status",
        x = "Top 10 cities with the highest number of voters", 
        y = "Total number of voters") +
-  scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
+  scale_y_continuous(breaks = seq(0, max(45000), by = 5000)) +
   guides(fill = guide_legend(title = "Marital Status")) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12))
 ```
 
 ```{r}
@@ -203,14 +195,20 @@ IDB_top10 |>
   group_by(name_muni, educ_cat) |>
   summarise(Total = n(), .groups = "drop") |>
   ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = educ_cat)) +
-  geom_col() +
+  geom_col(position = "dodge") +
   labs(title = "Voter Demographics in Major Cities by Educational Status",
        x = "Top 10 cities with the highest number of voters", 
        y = "Total number of voters") +
-  scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
+  scale_y_continuous(breaks = seq(0, max(45000), by = 5000)) +
   guides(fill = guide_legend(title = "Educational Status")) +
-  theme_minimal()　+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
 ```
 ```{r}
 # by cities by age categories
@@ -222,10 +220,17 @@ IDB_top10 |>
   labs(title = "Voter Demographics in Major Cities by Age Category",
        x = "Top 10 cities with the highest number of voters", 
        y = "Total number of voters") +
-  scale_y_continuous(breaks = seq(0, max(20000), by = 2000)) +
+  scale_y_continuous(breaks = seq(0, max(45000), by = 5000)) +
   guides(fill = guide_legend(title = "Age Category")) +
   theme_minimal()　+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12))
+ 
 ```
 
 ```{r}
@@ -244,9 +249,5 @@ IDB_top10 |>
         axis.title.y = element_blank(),
         legend.text = element_text(size = 14))
        
-
-
-
-
 ```
 
