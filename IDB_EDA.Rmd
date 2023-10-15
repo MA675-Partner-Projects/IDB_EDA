@@ -16,7 +16,7 @@ library(tidyverse)
 IDB <- read.csv("perfil_eleitor_secao_2022_ZZ.csv",　sep = ";")
 # CSV file uses a delimiter other than a comma, so specify it using the sep parameter. 
 
-
+table(IDB$NM_MUNICIPIO)
 
 ```
 
@@ -55,12 +55,16 @@ IDB_sub <- IDB_sub |>
     cd_marit = CD_ESTADO_CIVIL,
     cd_age = CD_FAIXA_ETARIA,
     cd_edu = CD_GRAU_ESCOLARIDADE,
-    elig_vote = QT_ELEITORES_PERFIL,
-    elig_bio = QT_ELEITORES_BIOMETRIA,
-    elig_dis = QT_ELEITORES_DEFICIENCIA,
-    elig_req = QT_ELEITORES_INC_NM_SOCIAL
-  )
+    num_eligvote = QT_ELEITORES_PERFIL,
+    num_eligbio = QT_ELEITORES_BIOMETRIA,
+    num_eligdis = QT_ELEITORES_DEFICIENCIA,
+    num_eligreq = QT_ELEITORES_INC_NM_SOCIAL
+    )
+```
 
+
+Correct class of variables and create other variables
+```{r}
 # correct class of variables
 IDB_sub <- IDB_sub |>
   mutate(cd_muni = as.factor(cd_muni),
@@ -72,7 +76,6 @@ IDB_sub <- IDB_sub |>
          )
 
 # create another educational category
-
 IDB_sub <- IDB_sub |>
   filter(!cd_edu == "0") |>   # remove samples without information regarding education
   mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "Highshool", "Incomplete high school")))
@@ -86,13 +89,57 @@ IDB_sub <- IDB_sub |>
 IDB_sub <- IDB_sub |>
   filter(!cd_age == "-3") |> # remove samples without information regarding age
   mutate(age_cat2 = if_else(cd_age %in% c(1600, 1700, 1800, 1900), "Under20", if_else(cd_age %in% c(6569, 7074, 7579, 8084, 8589, 9094, 9599, 9999) , "Elderly", "Adult")))
+```
 
-
+```{r}
 # change values from Portugees to English
 IDB_sub$sex <- recode(IDB_sub$sex, "FEMININO" = "female", "MASCULINO"= "male")
 
 IDB_sub$cd_marit <- recode(IDB_sub$cd_marit, "1" = "Single", "3" = "Married", "5" = "Widowed", "7" = "Legally Separated", "9" = "Divorced") 
 ```
+
+
+Accounting for the number of eligible voters in each row, create long format data frame.
+
+```{r}
+IDB_sub_long <- tibble()
+
+for (i in 1:nrow(IDB_sub)) {
+  row <- IDB_sub[i, ]
+  number <- row$num_eligvite
+  
+  for(j in 1:number) {
+    IDB_sub_long <- rbind(IDB_sub_long, row)
+  }
+}
+
+data <- data.frame(
+  name = c("A", "B", "C"),
+  number = c(3, 2, 4)
+)
+
+# 新しいデータフレームを初期化
+new_data <- data.frame()
+
+# 各行のコピーと増加
+for (i in 1:nrow(data)) {
+  row <- data[i, ]
+  number <- row$numbert
+  
+  # numberの値に応じて行を増やす
+  for (j in 1:number) {
+    new_data <- rbind(new_data, row)
+  }
+}
+
+# 新しいデータフレームを表示
+print(new_data)
+。
+
+
+```
+
+
 
 Pick up top 10 cities with large participants
 # change categorical values (name_muni).. Next Step
@@ -191,8 +238,12 @@ IDB_top10 |>
   labs(title = "Voter Demographics in Boston by Age Category",
        y = "Composition of Each Age Group") +
   guides(fill = guide_legend(title = "Age Category")) +
-  theme_minimal() 
-  # theme(legend.position = "bottom") 
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16),  
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_blank(),
+        legend.text = element_text(size = 14))
+       
 
 
 
