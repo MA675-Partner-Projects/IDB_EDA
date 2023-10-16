@@ -80,7 +80,7 @@ IDB_sub <- IDB_sub |>
 # create another educational category
 IDB_sub <- IDB_sub |>
   filter(!cd_edu == "0") |>   # remove samples without information regarding education
-  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "High Shool", "Inc-High School")))
+  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "High School", "Inc-High School")))
 # 276667obs > 276666 obs
 
 # create another age category"age_cat1"
@@ -135,9 +135,14 @@ top10_cities <- IDB_sub_long |>
   head(10)
 
 IDB_top10 <- IDB_sub_long |>
-  filter(name_muni %in% top10_cities$name_muni)
+  filter(name_muni %in% top10_cities$name_muni)　
 
 IDB_top10$name_muni <- recode(IDB_top10$name_muni, "LISBOA" = "Lisbon","MIAMI" = "Miami", "BOSTON" = "Boston", "NAG\xd3IA" = "Nagoya", "LONDRES" = "London", "PORTO" = "Porto", "T\xd3QUIO" = "Tokyo", "NOVA YORK" = "New York", "PARIS" = "Paris", "MIL\xc3O" = "Milan") 
+
+IDB_top10 <- IDB_top10 |>
+  mutate(region = ifelse(name_muni %in% c("Lisbon", "London", "Porto", "Paris", "Milan"), "Europe", 
+                        ifelse(name_muni %in% c("Miami", "Boston", "New York"), "US", 
+                               ifelse(name_muni %in% c("Nagoya", "Tokyo", "Japan"), "Japan", NA))))
 
 IDB_top10 |>
   group_by(name_muni) |>
@@ -148,6 +153,8 @@ city_order <- c("Lisbon", "Miami", "Boston", "Nagoya", "London", "Porto", "Tokyo
 ```
 
 Create graph
+
+bar chart by sex ver1
 ```{r}
 # by cities by sex
 IDB_top10 |>
@@ -169,8 +176,47 @@ IDB_top10 |>
         axis.text.y = element_text(size = 12),
         legend.title = element_text(size = 14),
         legend.text = element_text(size = 14))
-
 ```
+
+bar chart by sex Ver2 (with 95%CI, show percentage of female, categorized by region)
+```{r}
+# calculate percentage of female and se
+IDB_top10_summary <- IDB_top10 |>
+  group_by(name_muni, region) |>
+  summarise(
+    FemalePer = sum(sex == "female") / n() * 100,
+    Total = n(), .groups = 'drop'
+  ) |>
+  mutate(se = sqrt(FemalePer * (100 - FemalePer) / Total)) |>
+  mutate(name_muni = factor(name_muni, levels = city_order)) 
+  
+
+# create bar charts by sex
+ggplot(IDB_top10_summary, aes(x = name_muni, y = FemalePer, fill = region)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(
+    aes(ymin = FemalePer - 1.96 * se, ymax = FemalePer + 1.96 * se),
+    width = 0.25,  
+    position = position_dodge(width = 0.9)
+  ) +
+  geom_text(aes(label = Total), vjust = -0.5, position = position_dodge(width = 0.9), size = 4.0) +
+  labs(
+    title = "Voter Demographics in Major Cities (Percentage of Female)",
+    x = "Top 10 cities with the highest number of voter",
+    y = "Percentage of Female"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 18, vjust = 2.0),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1.3, size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14)) +
+  geom_hline(yintercept = 50, linetype = "dashed", color = "red") +
+  scale_y_continuous(breaks = seq(0, 100, by = 10))
+```
+
 
 ```{r}
 # by cities by marital status
@@ -195,17 +241,19 @@ IDB_top10 |>
         legend.text = element_text(size = 12))
 ```
 
+
+Bar chart by educational categories ver1
 ```{r}
 # by cities by educational categories
 IDB_top10 |>
-  group_by(name_muni, educ_cat) |>
-  summarise(Total = n(), .groups = "drop") |>
+  group_by(name_muni, educ_cat, region) |>
+  summarise(Total = n(),.groups = "drop") |>
   mutate(name_muni = factor(name_muni, levels = city_order)) |>
   ggplot(aes(x = name_muni, y = Total, fill = educ_cat)) +
   geom_col(position = "dodge") +
   labs(title = "Voter Demographics in Major Cities by Educational Status",
        x = "Top 10 cities with the highest number of voters", 
-       y = "Total number of voters") +
+       y = "Percentage of voters") +
   scale_y_continuous(breaks = seq(0, max(45000), by = 5000)) +
   guides(fill = guide_legend(title = "Educational Status")) +
   theme_minimal() +
@@ -215,8 +263,47 @@ IDB_top10 |>
         axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
         axis.text.y = element_text(size = 12),
         legend.title = element_text(size = 12),
-        legend.text = element_text(size = 10))
+        legend.text = element_text(size = 10),
+        legend.position = "bottom")
 ```
+
+
+Bar chart by educational categories ver2
+```{r}
+IDB_top10 |>
+  group_by(name_muni, educ_cat, region) |>
+  summarise(Total = n(),.groups = "drop") |>
+  mutate(name_muni = factor(name_muni, levels = city_order)) |>
+  group_by(name_muni) |>
+  mutate(EducPer = Total / sum(Total)) |>
+  ggplot(aes(x = name_muni, y = EducPer, fill = factor(educ_cat, levels = c("Inc-High School", "High School", "College"))))　 +
+  geom_col(position = "dodge") +
+  labs(title = "Voter Demographics in Major Cities by Educational Status",
+       x = "Top 10 cities with the highest number of voters", 
+       y = "Percentage of voters") +
+  scale_fill_manual(values = c("Inc-High School" = "blue", "High School" = "green", "College" = "red")) +
+  scale_y_continuous(labels = scales::percent_format(scale = 100)) +
+  guides(fill = guide_legend(title = "Educational Status")) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.position = "bottom") # +
+  # facet_wrap(~region)
+
+
+
+```
+
+
+
+
+
+
 ```{r}
 # by cities by age categories (Adult, Elderly, Under20)
 IDB_top10 |>
