@@ -60,6 +60,8 @@ IDB_sub <- IDB_sub |>
     num_eligdis = QT_ELEITORES_DEFICIENCIA,
     num_eligreq = QT_ELEITORES_INC_NM_SOCIAL
     )
+
+summary(IDB_sub)
 ```
 
 
@@ -78,12 +80,14 @@ IDB_sub <- IDB_sub |>
 # create another educational category
 IDB_sub <- IDB_sub |>
   filter(!cd_edu == "0") |>   # remove samples without information regarding education
-  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "Highshool", "Incomplete High School")))
+  mutate(educ_cat = if_else(cd_edu == 8, "College", if_else(cd_edu %in% c(7,6) , "High Shool", "Inc-High School")))
+# 276667obs > 276666 obs
 
 # create another age category"age_cat1"
 IDB_sub <- IDB_sub |>
   filter(!cd_age == "-3") |> # remove samples without information regarding age
   mutate(age_cat1 = if_else(cd_age %in% c(1600, 1700, 1800, 1900), "10s", if_else(cd_age %in% c(2000, 2124,  2529), "20s", ifelse(cd_age %in% c(3034, 3539), "30s", ifelse(cd_age %in% c(4044, 4549), "40s", ifelse(cd_age %in% c(5054, 5559), "50s", ifelse(cd_age %in% c(6064, 6569), "60s", ifelse(cd_age %in% c(7074, 7579), "70s", ifelse(cd_age %in% c(8084, 8589), "80s", ifelse(cd_age %in% c(9094, 9599), "90s", "100+"))))))))))
+# 276666obs > 276663
 
 # create another age category"age_cat2"
 IDB_sub <- IDB_sub |>
@@ -133,14 +137,14 @@ top10_cities <- IDB_sub_long |>
 IDB_top10 <- IDB_sub_long |>
   filter(name_muni %in% top10_cities$name_muni)
 
-IDB_top10$name_muni <- recode(IDB_top10$name_muni, "LISBOA" = "Lisbon", "NOVA YORK" = "New York", "MIL\xc3O" = "Milan", "NAG\xd3IA" = "Nagoya", "MADRI" = "Madrid", "MIAMI" = "Miami", 
-"LONDRES" = "London", "T\xd3QUIO" = "Tokyo", "BOSTON" = "Boston", "PORTO" = "Porto") 
+IDB_top10$name_muni <- recode(IDB_top10$name_muni, "LISBOA" = "Lisbon","MIAMI" = "Miami", "BOSTON" = "Boston", "NAG\xd3IA" = "Nagoya", "LONDRES" = "London", "PORTO" = "Porto", "T\xd3QUIO" = "Tokyo", "NOVA YORK" = "New York", "PARIS" = "Paris", "MIL\xc3O" = "Milan") 
 
 IDB_top10 |>
   group_by(name_muni) |>
   summarise(Total = n()) |>
   arrange(desc(Total))
 
+city_order <- c("Lisbon", "Miami", "Boston", "Nagoya", "London", "Porto", "Tokyo", "New York", "Paris", "Milan")
 ```
 
 Create graph
@@ -149,7 +153,8 @@ Create graph
 IDB_top10 |>
   group_by(name_muni, sex) |>
   summarise(Total = n(), .groups = "drop") |>
-  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = sex)) +
+  mutate(name_muni = factor(name_muni, levels = city_order)) |>
+  ggplot(aes(x = name_muni, y = Total, fill = sex)) +
   geom_col() +
   labs(title = "Voter Demographics in Major Cities by Gender",
        x = "Top 10 cities with the highest number of voters", 
@@ -172,7 +177,8 @@ IDB_top10 |>
 IDB_top10 |>
   group_by(name_muni, cd_marit) |>
   summarise(Total = n(), .groups = "drop") |>
-  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = cd_marit)) +
+  mutate(name_muni = factor(name_muni, levels = city_order)) |>
+  ggplot(aes(x = name_muni, y = Total, fill = cd_marit)) +
   geom_col(position = "dodge") +
   labs(title = "Voter Demographics in Major Cities by Marital Status",
        x = "Top 10 cities with the highest number of voters", 
@@ -194,7 +200,8 @@ IDB_top10 |>
 IDB_top10 |>
   group_by(name_muni, educ_cat) |>
   summarise(Total = n(), .groups = "drop") |>
-  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = educ_cat)) +
+  mutate(name_muni = factor(name_muni, levels = city_order)) |>
+  ggplot(aes(x = name_muni, y = Total, fill = educ_cat)) +
   geom_col(position = "dodge") +
   labs(title = "Voter Demographics in Major Cities by Educational Status",
        x = "Top 10 cities with the highest number of voters", 
@@ -211,11 +218,12 @@ IDB_top10 |>
         legend.text = element_text(size = 10))
 ```
 ```{r}
-# by cities by age categories
+# by cities by age categories (Adult, Elderly, Under20)
 IDB_top10 |>
   group_by(name_muni, age_cat2) |>
   summarise(Total = n(), .groups = "drop") |>
-  ggplot(aes(x = reorder(name_muni, -Total), y = Total, fill = age_cat2)) +
+  mutate(name_muni = factor(name_muni, levels = city_order)) |>
+  ggplot(aes(x = name_muni, y = Total, fill = age_cat2)) +
   geom_col() +
   labs(title = "Voter Demographics in Major Cities by Age Category",
        x = "Top 10 cities with the highest number of voters", 
@@ -232,6 +240,29 @@ IDB_top10 |>
         legend.text = element_text(size = 12))
  
 ```
+```{r}
+# by cities by age categories (10s, 20s, 30s,....100+)
+IDB_top10 |>
+  group_by(name_muni, age_cat1) |>
+  summarise(Total = n(), .groups = "drop") |>
+  mutate(name_muni = factor(name_muni, levels = city_order)) |>
+  ggplot(aes(x = name_muni, y = Total, fill = age_cat1))+
+  geom_col() +
+  labs(title = "Voter Demographics in Major Cities by Age Category",
+       x = "Top 10 cities with the highest number of voters", 
+       y = "Total number of voters") +
+  scale_y_continuous(breaks = seq(0, max(45000), by = 5000)) +
+  guides(fill = guide_legend(title = "Age Category")) +
+  theme_minimal()　+
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 12))
+```
+
 
 ```{r}
 # pie chart by age categories
