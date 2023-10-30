@@ -111,7 +111,7 @@ city_name_t <- c(
   "TIRANA" = "TIRANA",
   
   "FARO" = "FARO",
-  "SAINT JOHNS" = "SAINT JOHN'S",
+  "SAINT JOHNS" = "SAINT JOHNS", #Not sure
   "PUERTO IGUAZ\xda" = "PUERTO IGUAZU", 
   "BAGD\xc1" = "BAGHDAD", 
   "NASSAU" = "NASSAU",
