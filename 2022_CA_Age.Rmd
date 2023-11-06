@@ -288,7 +288,7 @@ ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "ANALFABETO"] <- "ILLITERATE"
 ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "N\xc3O INFORMADO" ] <- "NOT INFORMED"
 ```
 
-# Create wide format table for Age
+# Create wide format dataframe for Age
 This time I removed cities with voters under 5 in each age category on average, this means I removed the cities with total voters under 5 voters * 22 age categories = 110 voters.
 ```{r}
 # Duplicate each row and create new df accounting for the number of eligible voters in each row
@@ -323,5 +323,32 @@ ZZ22_wider_age_rm <- ZZ22_wider_age |>
 # check the total number of each column(age category)
 colSums(ZZ22_wider_age_rm[, 2:24])
 
+```
+Factor Analysis (city vs year)
+```{r}
+# Standardize the data in columns except the first one(city name column)
+ZZ22_wider_age_rm[, -1] <- scale(ZZ22_wider_age_rm[, -1])
+
+# Used Ward's method
+hage <- hclust(dist(ZZ22_wider_age_rm[, -c(1, 24)], method = "euclidean"),"ward.D2")
+
+plot(hage, main = 'Year', hang = -1, cex = .6)
+# there seems to be three clusters from this Hierarchical clustering dendrogram、
+
+# print out the number of observations in each cluster
+table(cutree(hage, k=3))
+
+# Assignment of clusters to each city
+clusters_age <- cutree(hage, k=3)
+ZZ22_wider_age_rm$cluster <- clusters_age
+
+# visualize the dendrogram
+hage2 <- hcut(ZZ22_wider_age_rm[, -c(1, 24)], k=3, hc_method = "ward.D2", stand = F)
+# cluster size
+hage2$size
+# visualize the dendrogram
+fviz_dend(hage2,rect=T)
+# visualize the cluster
+fviz_cluster(hage2)
 ```
 
