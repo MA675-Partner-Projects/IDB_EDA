@@ -23,6 +23,20 @@ print(counts)
 
 ```
 ```{r}
+
+# Assuming the data is already read into an R dataframe named 'data'
+
+# Selecting unique EDUCATION_LEVEL_CODE and EDUCATION_LEVEL
+education_levels <- data %>%
+  select(EDUCATION_LEVEL_CODE, EDUCATION_LEVEL) %>%
+  distinct()
+
+# Print the unique education levels
+print(education_levels)
+
+```
+
+```{r}
 unique_cities <- data %>%
   select(CITY_CODE, CITY_NAME) %>%
   distinct()
