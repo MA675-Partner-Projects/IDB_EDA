@@ -1,0 +1,26 @@
+---
+title: "education level"
+author: "Yingmai Chen"
+date: "2023-11-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+
+# Read the data
+data <- read_csv("ZZ22.csv")
+
+# Count the number of people for each CITY_CODE and EDUCATION_LEVEL_CODE
+counts <- data %>%
+  count(CITY_CODE, EDUCATION_LEVEL_CODE)
+
+# View the result
+print(counts)
+
+```
+
+
