@@ -1,6 +1,6 @@
 ---
 title: "education level"
-author: "Yingmai Chen"
+author: "Yingmai Chen，YangXiao"
 date: "2023-11-06"
 output: html_document
 ---
@@ -17,9 +17,9 @@ data <- read_csv("ZZ22.csv")
 # Count the number of people for each CITY_CODE and EDUCATION_LEVEL_CODE
 counts_education <- data %>%
   count(CITY_CODE, EDUCATION_LEVEL_CODE)
-city_code
+
 # View the result
-print(counts)
+print(counts_education)
 
 ```
 ```{r}
@@ -45,4 +45,36 @@ unique_cities <- data %>%
 print(unique_cities)
 ```
 
+```{r}
+counts_Marriage <- data %>%
+  count(CITY_CODE, MARITAL_STATUS_CODE)
+
+print(counts_Marriage)
+```
+```{r}
+MARITAL_STATUS <- data %>%
+  select(MARITAL_STATUS_CODE, MARITAL_STATUS) %>%
+  distinct()
+
+# Print the unique education levels
+print(MARITAL_STATUS)
+```
+```{r}
+grouped_gender <- data %>%
+  group_by(CITY_CODE, GENDER) %>%
+  tally()
+
+
+grouped_gender_difination<-data %>%
+  group_by(GENDER_CODE, GENDER) %>%
+  tally()%>%
+  select(GENDER_CODE, GENDER)
+```
+
+```{r}
+data <- data %>%
+  mutate(AGE_GROUP_CODE = str_replace(AGE_GROUP_CODE, "^(\\d{2})(\\d{2})$", "\\1-\\2")) %>%
+  mutate(AGE_GROUP_CODE = ifelse(AGE_GROUP_CODE == "99-99", ">99", AGE_GROUP_CODE)) %>%
+  mutate(AGE_GROUP_CODE = str_replace(AGE_GROUP_CODE, "^(\\d{2})-00$", "\\1"))
+```
 
