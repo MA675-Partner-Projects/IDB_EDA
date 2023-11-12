@@ -236,6 +236,15 @@ ZZ18$CITY_NAME <- ifelse(ZZ18$CITY_NAME %in% names(city_name_t),
                          ZZ18$CITY_NAME)
 ```
 
+## Country Name
+```{r}
+city_country <- readxl::read_xlsx("City_Country.xlsx")
+
+ZZ18_2 <- ZZ18 |>
+  left_join(select(city_country, -CITY_NAME), by = "CITY_CODE")
+```
+
+
 ## City Biometric status
 
 ```{r}
