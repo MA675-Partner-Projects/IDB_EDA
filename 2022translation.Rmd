@@ -1,6 +1,6 @@
 ---
 title: "Translation2022"
-author: "Yuchen Huang"
+author: "Yuchen Huang" + "Yuta Tsukumo"
 date: "2023-10-27"
 output: pdf_document
 ---
@@ -246,6 +246,15 @@ ZZ22$CITY_NAME <- ifelse(ZZ22$CITY_NAME %in% names(city_name_t),
                          ZZ22$CITY_NAME)
 
 ```
+
+## Country Name
+```{r}
+city_country <- readxl::read_xlsx("City_Country.xlsx")
+
+ZZ22 <- ZZ22 |>
+  left_join(select(city_country, -CITY_NAME), by = "CITY_CODE")
+```
+
 
 ## City Biometric status
 
