@@ -34,11 +34,11 @@ ZZ22_age <- ZZ22_age |>
 ZZ22_age_wide <- ZZ22_age |>
   group_by(CITY_CODE, AGE_GROUP) |>
   summarise(count = n()) |>
-  pivot_wider(names_from = AGE_GROUP, values_from = count)
+  pivot_wider(names_from = AGE_GROUP, values_from = count) |> ungroup()
 
 
 ZZ22_age_wide <- ZZ22_age_wide |>
-  mutate_all(~replace(., is.na(.), 0)) |> ungroup()
+  mutate_all(~replace(., is.na(.), 0))
 
 ```
 
@@ -102,15 +102,9 @@ plot_dist <- function (d, labels = seq_len(attr(d, "Size")), pos = 1, ...) {
 
 ## Distance
 ```{r}
-test <- ZZ22_age_wide |>
-  select(CITY_CODE,`16`, `17`, `18`)
-
 data_fields <- colnames(ZZ22_age_wide)[-1]
 (d <- tibble2dist(ZZ22_age_wide, ord_dist, data_fields))
 
-
-(d <- tibble2dist(ZZ22_age_wide, ord_dist, data_fields, deviance = TRUE))
-(d <- tibble2dist(t, ord_dist, data_fields))
 plot_dist(d, labels = ZZ22_age_wide$CITY_CODE)
 
 ```
