@@ -1,0 +1,116 @@
+---
+title: "2022 Age"
+author: "Yuchen Huang"
+date: "2023-11-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read Data
+
+```{r}
+library(tidyverse)
+ZZ22 <- read.csv("translated_ZZ22.csv")
+#glimpse(ZZ22)
+```
+
+
+## remove cities have less than 22*50 = 110 voters
+```{r}
+ZZ22_age <- ZZ22 |>
+  select(CITY_CODE, CITY_NAME, AGE_GROUP)
+#remove missing value
+ZZ22_age <- ZZ22_age[!(ZZ22_age$AGE_GROUP == "Invalid"), ]
+
+#remove cities less than 110
+ZZ22_age <- ZZ22_age |>
+  group_by(CITY_CODE)|>
+  filter(n()>=110) |>
+  ungroup()
+
+ZZ22_age_wide <- ZZ22_age |>
+  group_by(CITY_CODE, AGE_GROUP) |>
+  summarise(count = n()) |>
+  pivot_wider(names_from = AGE_GROUP, values_from = count)
+
+
+ZZ22_age_wide <- ZZ22_age_wide |>
+  mutate_all(~replace(., is.na(.), 0)) |> ungroup()
+
+```
+
+## Ordinal Distance function
+```{r}
+test <- ZZ22_age_wide |>
+  select(CITY_CODE,`16`, `17`, `18`)
+ev_multinom <- function (x, y) # KL divergence
+  2 * sum(unlist(ifelse(x == 0 | y == 0, 0, x * log(x / y))))
+
+l2_dist <- function (x, y) sum((x - y) ^ 2)
+
+cat_dist <- function (x, y, deviance = FALSE) {
+  wx <- sum(x); wy <- sum(y)
+  m <- (x + y) / (wx + wy) # center
+  x <- x / wx; y <- y / wy
+  D <- if (deviance) dev_multinom else l2_dist
+  sqrt(.5 * wx * D(x, m)) + sqrt(.5 * wy * D(y, m))
+}
+
+ord_dist <- function (x, y) {
+  wx <- sum(x); wy <- sum(y)
+  k <- length(x) # == length(y)
+  x <- cumsum(x)[-k]; y <- cumsum(y)[-k]
+  m <- (x + y) / (wx + wy) # center
+  x <- x / wx; y <- y / wy
+  sqrt(wx * l2_dist(x, m)) + sqrt(wy * l2_dist(y, m))
+}
+
+
+# use in tibbles
+
+
+lower2dist <- function (m) {
+  m <- as.matrix(m)
+  n <- nrow(m) + 1 # == ncol(m) + 1
+  d <- matrix(0, n, n)
+  d[2:n, 1:(n - 1)] <- m
+  as.dist(d)
+}
+
+tibble2dist <- function (t, dist_f, data_fields, ...) {
+  t1 <- t |> mutate(id_ = row_number()) |> nest(data = all_of(data_fields))
+  inner_join(t1, t1, by = join_by(id_ < id_)) |>
+    mutate(dist = map2_dbl(data.x, data.y, dist_f, ...)) |>
+    select(id_.x, id_.y, dist) |> spread(id_.x, dist, fill = 0) |>
+    column_to_rownames(var = "id_.y") |> lower2dist()
+}
+
+plot_dist <- function (d, labels = seq_len(attr(d, "Size")), pos = 1, ...) {
+  op <- par(mfrow = c(1, 2))
+  plot(hclust(d, ...)) # hierarchical clustering
+  z <- cmdscale(d) # classic multidimensional scaling (MDS)
+  plot(z[,1], z[,2], xlab = "MDS1", ylab = "MDS2")
+  text(z[,1], z[,2], labels, pos = pos)
+  par(op)
+  invisible(z)
+}
+
+```
+
+## Distance
+```{r}
+test <- ZZ22_age_wide |>
+  select(CITY_CODE,`16`, `17`, `18`)
+
+data_fields <- colnames(ZZ22_age_wide)[-1]
+(d <- tibble2dist(ZZ22_age_wide, ord_dist, data_fields))
+
+
+(d <- tibble2dist(ZZ22_age_wide, ord_dist, data_fields, deviance = TRUE))
+(d <- tibble2dist(t, ord_dist, data_fields))
+plot_dist(d, labels = ZZ22_age_wide$CITY_CODE)
+
+```
