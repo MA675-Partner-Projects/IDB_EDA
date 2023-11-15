@@ -1,0 +1,512 @@
+---
+title: "Clustering"
+author: "Yuta + Yuchen + Febriany"
+date: "2023-11-10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read Data
+
+```{r}
+library(tidyverse)
+ZZ22 <- read.csv("perfil_eleitor_secao_2022_ZZ.csv",　sep = ";")
+#glimpse(ZZ22)
+```
+
+## Column Names
+
+```{r}
+col_name <- colnames(ZZ22)
+colnames(ZZ22) <- c(
+    "GENERATION_DATE",       # "DT_GERACAO"
+    "GENERATION_TIME",       # "HH_GERACAO"
+    "ELECTION_YEAR",         # "ANO_ELEICAO"
+    "STATE_CODE",            # "SG_UF"
+    "CITY_CODE",             # "CD_MUNICIPIO"
+    "CITY_NAME",             # "NM_MUNICIPIO"
+    "CITY_BIOMETRIC_CODE",   # "CD_MUN_SIT_BIOMETRICA"
+    "CITY_BIOMETRIC_STATUS", # "DS_MUN_SIT_BIOMETRICA"
+    "ZONE_NUMBER",           # "NR_ZONA"
+    "SECTION_NUMBER",        # "NR_SECAO"
+    "VOTING_PLACE_NUMBER",   # "NR_LOCAL_VOTACAO"
+    "GENDER_CODE",           # "CD_GENERO"
+    "GENDER",                # "DS_GENERO"
+    "MARITAL_STATUS_CODE",   # "CD_ESTADO_CIVIL"
+    "MARITAL_STATUS",        # "DS_ESTADO_CIVIL"
+    "AGE_GROUP_CODE",        # "CD_FAIXA_ETARIA"
+    "AGE_GROUP",             # "DS_FAIXA_ETARIA"
+    "EDUCATION_LEVEL_CODE",  # "CD_GRAU_ESCOLARIDADE"
+    "EDUCATION_LEVEL",       # "DS_GRAU_ESCOLARIDADE"
+    "NUMBER_OF_VOTERS_PROFILE",   # "QT_ELEITORES_PERFIL"
+    "NUMBER_OF_BIOMETRIC_VOTERS", # "QT_ELEITORES_BIOMETRIA"
+    "NUMBER_OF_VOTERS_WITH_DISABILITIES", # "QT_ELEITORES_DEFICIENCIA"
+    "NUMBER_OF_VOTERS_WITH_SOCIAL_NAME"  # "QT_ELEITORES_INC_NM_SOCIAL"
+    )
+```
+
+## City Name
+
+```{r}
+city_name <- unique(ZZ22$CITY_NAME)
+city_name_t <- c(
+  "KATMANDU" = "KATHMANDU",
+  "ABIDJ\xc3" = "ABIDJAN", 
+  "ABU DHABI" = "ABU DHABI",
+  "ACCRA" = "ACCRA",
+  "AM\xc3" = "UNKNOWN", #Not sure
+  "ANCARA" = "ANKARA",
+  "ARGEL" = "ALGIERS",
+  "ARTIGAS" = "ARTIGAS", 
+  "ASSUN\xc7\xc3O" = "ASUNCION", #Not sure
+  "LISBOA" = "LISBON",
+  "NOVA YORK" = "NEW YORK",
+  "OSLO" = "OSLO",
+  "OTTAWA" = "OTTAWA",
+  "PANAMA" = "PANAMA CITY",
+  "PARAMARIBO" = "PARAMARIBO",
+  
+  
+  "SARAJEVO" = "SARAJEVO",
+  "BELMOPAN" = "BELMOPAN",
+  "CONACRI" = "CONAKRY",
+  "COTONOU" = "COTONOU",
+  "DAR ES SALAAM" = "DAR ES SALAAM",
+  "IEREVAN" = "YEREVAN",
+  "MENDOZA" = "MENDOZA",
+  "ZAGREB" = "ZAGREB",
+  "VANCOUVER" = "VANCOUVER",
+  "ATLANTA" = "ATLANTA",
+  "S\xc3O FRANCISCO" = "SAN FRANCISCO", 
+  "S\xc3O JOS\xc9" = "SAN JOSE", 
+  "S\xc3O SALVADOR" = "SAN SALVADOR", 
+  "SEUL" = "SEOUL",
+  "S\xd3FIA" = "SOFIA", #Not sure
+  "SYDNEY" = "SYDNEY",
+  "MIL\xc3O" = "MILAN", #Not sure
+  "NAG\xd3IA" = "NAGOYA", 
+  "MADRI" = "MADRID",
+  "MAN\xc1GUA" = "MANAGUA", #Not sure
+  "MANILA" = "MANILA",
+  "MAPUTO" = "MAPUTO",
+  "MEXICO" = "MEXICO CITY",
+  "MIAMI" = "MIAMI",
+  "LONDRES" = "LONDON",
+  "MASCATE" = "MUSCAT",
+  "BAKU" = "BAKU",
+  "LIUBLIANA" = "LJUBLJANA",
+  "BRAZZAVILLE" = "BRAZZAVILLE",
+  "BRATISLAVA" = "BRATISLAVA",
+  "S\xc3O TOM\xc9" = "SAO TOME", 
+  "ASTANA" = "NUR-SULTAN",
+  "MALABO" = "MALABO",
+  "UAGADUGU" = "OUAGADOUGOU",
+  "ISTAMBUL" = "ISTANBUL",
+  "NICOSIA" = "NICOSIA",
+  "GUATEMALA" = "GUATEMALA CITY",
+  "TBILISI" = "TBILISI",
+  "TIRANA" = "TIRANA",
+  
+  "FARO" = "FARO",
+  "SAINT JOHNS" = "SAINT JOHN'S",
+  "PUERTO IGUAZ\xda" = "PUERTO IGUAZU", 
+  "BAGD\xc1" = "BAGHDAD", 
+  "NASSAU" = "NASSAU",
+  "ABUJA" = "ABUJA",
+  "COBIJA" = "COBIJA",
+  "PUERTO QUIJARRO" = "PUERTO QUIJARRO",
+  "RIVERA" = "RIVERA",
+  "VATICANO" = "VATICAN CITY",
+  "LUSACA" = "LUSAKA",
+  "TALIN" = "TALLINN",
+  "ADIS ABEBA" = "ADDIS ABABA",
+  "ST GEORGES DE LOYAPOCK" = "SAINT-GEORGES-DE-L'OYAPOCK",
+  "LILONGUE" = "LILONGWE",
+  "BAMAKO" = "BAMAKO",
+  "YANGON" = "YANGON",
+  "CASTRIES" = "CASTRIES",
+  "KINGSTON-JAMAICA" = "KINGSTON",
+  "BAREIN" = "MANAMA",
+  "T\xd3QUIO" = "TOKYO", 
+  "MONTEVID\xc9U" = "MONTEVIDEO", 
+  "MONTREAL" = "MONTREAL",
+  "ATENAS" = "ATHENS",
+  "BANGKOK" = "BANGKOK",
+  "BARCELONA" = "BARCELONA",
+  "PARIS" = "PARIS",
+  "NAIR\xd3BI" = "NAIROBI", 
+  "NOVA DELHI" = "NEW DELHI",
+  "LOS ANGELES" = "LOS ANGELES",
+  "BERLIM" = "BERLIN",
+  "BISSAU" = "BISSAU",
+  "BOGOT\xc1" = "BOGOTA", 
+  "BOSTON" = "BOSTON",
+  "PASO LOS LIBRES" = "PASO DE LOS LIBRES",
+  "PEDRO JUAN CABALLERO" = "PEDRO JUAN CABALLERO",
+  "PEQUIM" = "BEIJING",
+  "PORT OF SPAIN" = "PORT OF SPAIN",
+  "PORTO PR\xcdNCIPE" = "PORT-AU-PRINCE",
+  "PORTO" = "PORTO",
+  "TAIP\xc9" = "TAIPEI", #
+  "TEER\xc3" = "TEHRAN", #Not sure
+  "TEGUCIGALPA" = "TEGUCIGALPA",
+  
+  "TEL AVIV" = "TEL AVIV",
+  "LUANDA" = "LUANDA",
+  "BUENOS AIRES" = "BUENOS AIRES",
+  "CAIENA" = "CAYENNE",
+  "CAIRO" = "CAIRO",
+  "CAMBERRA" = "CAMBERRA",
+  "CARACAS" = "CARACAS",
+  "CHICAGO" = "CHICAGO",
+  "BEIRUTE" = "BEIRUT",
+  "BELGRADO" = "BELGRADE",
+  "LOM\xc9" = "LOME",
+  "TORONTO" = "TORONTO",
+  "MOSCOU" = "MOSCOW",
+  "MUMBAI" = "MUMBAI",
+  "MUNIQUE" = "MUNICH",
+  "CANT\xc3O" = "GUANGZHOU", #Not sure
+  "GABORONE" = "GABORONE",
+  "TR\xcdPOLI" = "TRIPOLI", 
+  "TUNIS" = "TUNIS",
+  "VARS\xd3VIA" = "WARSAW", #Not sure
+  "VIENA" = "VIENNA",
+  "PRAGA" = "PRAGUE",
+  "PRAIA" = "PRAIA",
+  "PRET\xd3RIA" = "PRETORIA",
+  "QUITO" = "QUITO",
+  "WASHINGTON" = "WASHINGTON",
+  "CHUY" = "CHUY",
+  "CIDADE DO CABO" = "CAPE TOWN",
+  "SINGAPURA" = "SINGAPORE",
+  "CIUDAD DEL ESTE" = "CIUDAD DEL ESTE",
+  "RABAT" = "RABAT",
+  "RAMALLAH" = "RAMALLAH",
+  "RIADE" = "RIYADH",
+  "RIO BRANCO" = "RIO BRANCO",
+  "ROMA" = "ROME",
+  "WELLINGTON" = "WELLINGTON",
+  "WINDHOEK" = "WINDHOEK",
+  "XANGAI" = "SHANGHAI",
+  "ZURIQUE" = "ZURICH",
+  "DUBLIN" = "DUBLIN",
+  "ENCARNACI\xd3N" = "ENCARNACION", 
+  "ESTOCOLMO" = "STOCKHOLM",
+  "FRANKFURT" = "FRANKFURT",
+  "BRIDGETOWN" = "BRIDGETOWN",
+  "BRUXELAS" = "BRUSSELS",
+  "AMSTERD\xc3" = "AMSTERDAM", 
+  "SALTO DEL GUAIR\xc1" = "SALTO DEL GUAIRA",
+  "CIUDAD GUAYANA" = "CIUDAD GUAYANA",
+  "COCHABAMBA" = "COCHABAMBA",
+  "CONCEPCI\xd3N" = "CONCEPCION", 
+  "COPENHAGUE" = "COPENHAGEN",
+  "C\xd3RDOBA" = "CORDOBA", 
+  "DACAR" = "DAKAR",
+  "DAMASCO" = "DAMASCUS",
+  "D\xcdLI" = "DILI", 
+  "DOHA" = "DOHA",
+  "BUCARESTE" = "BUCHAREST",
+  "BUDAPESTE" = "BUDAPEST",
+  "SANTA CRUZ DE LA SIERRA" = "SANTA CRUZ DE LA SIERRA",
+  "SANTIAGO" = "SANTIAGO",
+  "S\xc3O DOMINGOS" = "SANTO DOMINGO", 
+  "HARTFORD" = "HARTFORD",
+  "COLOMBO" = "COLOMBO",
+  "GENEBRA" = "GENEVA",
+  "GEORGETOWN" = "GEORGETOWN",
+  "HAMAMATSU" = "HAMAMATSU",
+  "HAN\xd3I" = "HANOI", 
+  "HARARE" = "HARARE",
+  "HAVANA" = "HAVANA",
+  "HELSINQUE" = "HELSINKI",
+  "HONG KONG" = "HONG KONG",
+  "HOUSTON" = "HOUSTON",
+  "IAUND\xca" = "DJIBOUTI", #Not sure
+  "IQUITOS" = "IQUITOS",
+  "ISLAMABADE" = "ISLAMABAD", 
+  "JACARTA" = "JAKARTA", 
+  "KIEV" = "KIEV",
+  "KINSHASA" = "KINSHASA",
+  "KUAITE" = "KUWAIT CITY",
+  "KUALA LUMPUR" = "KUALA LUMPUR",
+  "LA PAZ" = "LA PAZ",
+  "LAGOS" = "LAGOS",
+  "LIBREVILLE" = "LIBREVILLE",
+  "LIMA" = "LIMA"
+)
+
+# Translating city names
+ZZ22$CITY_NAME <- ifelse(ZZ22$CITY_NAME %in% names(city_name_t),
+                         city_name_t[ZZ22$CITY_NAME],
+                         ZZ22$CITY_NAME)
+
+```
+
+## City Biometric status
+
+```{r}
+unique(ZZ22$CITY_BIOMETRIC_STATUS)
+ZZ22$CITY_BIOMETRIC_STATUS <- "Without biometrics"
+```
+
+## Gender
+
+```{r}
+unique(ZZ22$GENDER)
+ZZ22$GENDER <- ifelse(ZZ22$GENDER == "MASCULINO", "male", "female")
+```
+
+Marital Status
+
+```{r}
+unique(ZZ22$MARITAL_STATUS)
+ZZ22$MARITAL_STATUS[ZZ22$MARITAL_STATUS == "SOLTEIRO"] <- "SINGLE"
+ZZ22$MARITAL_STATUS[ZZ22$MARITAL_STATUS == "CASADO"] <- "MARRIED"
+ZZ22$MARITAL_STATUS[ZZ22$MARITAL_STATUS == "DIVORCIADO"] <- "DIVORCED"
+ZZ22$MARITAL_STATUS[ZZ22$MARITAL_STATUS == "VIÚVO"] <- "WIDOWED"
+ZZ22$MARITAL_STATUS[ZZ22$MARITAL_STATUS == "SEPARADO JUDICIALMENTE"] <- "LEGALLY SEPARATED"
+
+```
+
+Education Level
+
+```{r}
+unique(ZZ22$EDUCATION_LEVEL)
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "ENSINO M\xc9DIO INCOMPLETO"] <- "INCOMPLETE HIGH SCHOOL" #code 5
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "ENSINO M\xc9DIO COMPLETO"] <- "HIGH SCHOOL GRADUATE" #code 6
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "SUPERIOR INCOMPLETO"] <- "INCOMPLETE COLLEGE/UNIVERSITY" #code 7
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "SUPERIOR COMPLETO"] <- "COLLEGE/UNIVERSITY GRADUATE" #code 8
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "ENSINO FUNDAMENTAL COMPLETO"] <- "COMPLETE ELEMENTARY EDUCATION" #code 4
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "ENSINO FUNDAMENTAL INCOMPLETO"] <- "INCOMPLETE ELEMENTARY EDUCATION"#code 3
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "L\xca E ESCREVE"] <- "LITERATE (CAN READ AND WRITE)" #code 2
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "ANALFABETO"] <- "ILLITERATE" #code 1
+ZZ22$EDUCATION_LEVEL[ZZ22$EDUCATION_LEVEL == "N\xc3O INFORMADO" ] <- "NOT INFORMED" #code 0
+```
+```{r}
+```
+
+
+```{r}
+```
+
+Wide format dataframe for Age Group
+
+```{r}
+# Duplicate each row and create new df accounting for the number of eligible voters in each row
+ZZ22_long <- ZZ22[rep(seq_len(nrow(ZZ22)), ZZ22$NUMBER_OF_VOTERS_PROFILE),]
+
+ZZ22_wider_age <- ZZ22_long|>　
+  filter(!AGE_GROUP_CODE == -1) |>
+  group_by(CITY_NAME, AGE_GROUP_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = AGE_GROUP_CODE,
+    values_from = N)
+
+# transform from NA to 0
+ZZ22_wider_age[is.na(ZZ22_wider_age)] <- 0
+
+# add the variable shows total voters across ages
+ZZ22_wider_age <- ZZ22_wider_age |>
+  mutate(Total = rowSums(ZZ22_wider_age[, 2:23]))
+
+# change the order of age variables
+ZZ22_wider_age <- ZZ22_wider_age |>
+  select("CITY_NAME", "1600", "1700", "1800", "1900", "2000", "2124", "2529", "3034", "3539", "4044",
+         "4549", "5054", "5559", "6064", "6569", "7074", "7579", "8084", "8589", "9094", "9599", 
+         "9999", "Total")
+
+# remove cities with total voters under 110.
+ZZ22_wider_age_rm <- ZZ22_wider_age |>
+  filter(!Total < 110)
+
+# check the total number of each column(age category)
+colSums(ZZ22_wider_age_rm[, 2:24])
+
+```
+Wide format dataframe for Marital Status
+ 
+```{r}
+
+ZZ22_wider_ms <- ZZ22_long|>　
+  filter(!MARITAL_STATUS_CODE == -1) |>
+  group_by(CITY_NAME, MARITAL_STATUS_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = MARITAL_STATUS_CODE,
+    values_from = N
+  ) 
+
+# transform from NA to 0
+ZZ22_wider_ms[is.na(ZZ22_wider_ms)] <- 0
+
+# add the variable shows total voters across marital
+ZZ22_wider_ms <- ZZ22_wider_ms |>
+  mutate(Total = rowSums(ZZ22_wider_ms[, 2:6]))
+
+# change the order of marital variables
+ZZ22_wider_ms <- ZZ22_wider_ms |>
+  select("CITY_NAME", "1", "3", "5", "7", "9", "Total")
+
+# remove cities with total voters under 110.
+ZZ22_wider_ms_rm <- ZZ22_wider_ms |>
+  filter(!Total < 110)
+
+# check the total number of each column(marital category)
+colSums(ZZ22_wider_ms_rm[, 2:7])
+
+```
+ 
+ Wide format dataframe for Gender
+
+```{r}
+
+ZZ22_wider_gender <- ZZ22_long|>　
+  filter(!GENDER_CODE == -1) |>
+  group_by(CITY_NAME, GENDER_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = GENDER_CODE,
+    values_from = N
+  ) 
+
+# transform from NA to 0
+ZZ22_wider_gender[is.na(ZZ22_wider_gender)] <- 0
+
+# add the variable shows total voters across gender
+ZZ22_wider_gender <- ZZ22_wider_gender |>
+  mutate(Total = rowSums(ZZ22_wider_gender[, 2:3]))
+
+# change the order of gender variables
+#ZZ22_wider_gender <- ZZ22_wider_gender |>
+#  select("CITY_NAME", "Male", "Female", "Total")
+
+# remove cities with total voters under 110.
+ZZ22_wider_gender_rm <- ZZ22_wider_gender |>
+  filter(!Total < 110)
+
+# check the total number of each column(gender category)
+colSums(ZZ22_wider_gender_rm[, 2:4])
+
+
+```
+
+Wide format dataframe for Education Status
+
+```{r}
+ZZ22_wider_edu <- ZZ22_long|>　
+  filter(!EDUCATION_LEVEL_CODE == -1) |>
+  group_by(CITY_NAME, EDUCATION_LEVEL_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = EDUCATION_LEVEL_CODE,
+    values_from = N
+  ) 
+
+# transform from NA to 0
+ZZ22_wider_edu[is.na(ZZ22_wider_edu)] <- 0
+
+# add the variable shows total voters across gender
+ZZ22_wider_edu <- ZZ22_wider_edu |>
+  mutate(Total = rowSums(ZZ22_wider_edu[, 2:10]))
+
+# remove cities with total voters under 110.
+ZZ22_wider_edu_rm <- ZZ22_wider_edu |>
+  filter(!Total < 110)
+
+# check the total number of each column(education category)
+colSums(ZZ22_wider_edu_rm[, 2:11])
+
+```
+
+New category for education status
+
+```{r}
+ZZ22_long <- ZZ22_long |>
+  mutate(NEW_EDU_LEVEL_CODE = if_else(EDUCATION_LEVEL_CODE == 8, "3", if_else(EDUCATION_LEVEL_CODE %in% c(7,6) , "2", "1")))
+```
+
+```{r}
+ZZ22_wider_edu_new <- ZZ22_long|>　
+  filter(!NEW_EDU_LEVEL_CODE == -1) |>
+  group_by(CITY_NAME, NEW_EDU_LEVEL_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = NEW_EDU_LEVEL_CODE,
+    values_from = N
+  ) 
+
+# transform from NA to 0
+ZZ22_wider_edu_new[is.na(ZZ22_wider_edu_new)] <- 0
+
+# add the variable shows total voters across gender
+ZZ22_wider_edu_new <- ZZ22_wider_edu_new |>
+  mutate(Total = rowSums(ZZ22_wider_edu_new[, 2:4]))
+
+# remove cities with total voters under 110.
+ZZ22_wider_edu_rm_new <- ZZ22_wider_edu_new |>
+  filter(!Total < 110)
+
+# check the total number of each column(education category)
+colSums(ZZ22_wider_edu_rm_new[, 2:5])
+```
+
+
+```{r}
+# The Voters Distribution
+distri <- plot(ZZ22_wider_gender$Total, type = "p", pch = 16, col = "pink", xlab = "Index", ylab = "Total Voters", main = "Scatter Plot with Line Overlay")
+
+```
+```{r}
+# The Voters Distribution After Removed <100 total voters
+distri <- plot(ZZ22_wider_gender_rm$Total, type = "p", pch = 16, col = "purple", xlab = "Index", ylab = "Total Voters", main = "Scatter Plot with Line Overlay")
+```
+
+```{r}
+hist(ZZ22_wider_age$Total, breaks = 10, col = "blue", xlab = "Total Voters", ylab = "Frequency", main = "Distribution of Total Voters")
+```
+Clustering for Age Group
+
+```{r}
+
+data_fields <- colnames(ZZ22_wider_age_rm)[-c(1, 24)]
+#(d <- tibble2dist(ZZ22_wider_age_rm, cat_dist, data_fields))
+#(d <- tibble2dist(ZZ22_wider_age_rm, cat_dist, data_fields, deviance = TRUE))
+(d <- tibble2dist(ZZ22_wider_age_rm, ord_dist, data_fields))
+plot_dist(d, labels = ZZ22_wider_age_rm$CITY_NAME)
+```
+Clustering for Marital Status
+
+```{r}
+data_fields1 <- colnames(ZZ22_wider_ms_rm) [-c(1, 7)]
+(d1 <- tibble2dist(ZZ22_wider_ms_rm, cat_dist, data_fields1))
+(d1 <- tibble2dist(ZZ22_wider_ms_rm, cat_dist, data_fields1, deviance = TRUE))
+#(d <- tibble2dist(ZZ22_wider_ms, ord_dist, data_fields1))
+plot_dist(d1, labels = ZZ22_wider_ms_rm$CITY_NAME)
+```
+Clustering for Gender
+
+```{r}
+data_fields2 <- colnames(ZZ22_wider_gender_rm) [-c(1, 4)]
+(d2 <- tibble2dist(ZZ22_wider_gender_rm, cat_dist, data_fields2))
+(d2 <- tibble2dist(ZZ22_wider_gender_rm, cat_dist, data_fields2, deviance = TRUE))
+#(d <- tibble2dist(ZZ22_wider_ms, ord_dist, data_fields1))
+plot_dist(d2, labels = ZZ22_wider_gender_rm$CITY_NAME)
+```
+Clustering for Education
+
+```{r}
+data_fields3 <- colnames(ZZ22_wider_edu_rm_new) [-c(1, 5)]
+#(d2 <- tibble2dist(ZZ22_wider_edu_rm_new, cat_dist, data_fields2))
+#(d2 <- tibble2dist(ZZ22_wider_gender_rm, cat_dist, data_fields2, deviance = TRUE))
+(d3 <- tibble2dist(ZZ22_wider_edu_rm_new, ord_dist, data_fields3))
+plot_dist(d3, labels = ZZ22_wider_edu_rm_new$CITY_NAME)
+```
+
+
+
