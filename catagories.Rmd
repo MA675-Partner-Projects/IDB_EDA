@@ -63,12 +63,15 @@ print(MARITAL_STATUS)
 grouped_gender <- data %>%
   group_by(CITY_CODE, GENDER) %>%
   tally()
+print(grouped_gender)
+```
 
-
+```{r}
 grouped_gender_difination<-data %>%
   group_by(GENDER_CODE, GENDER) %>%
   tally()%>%
   select(GENDER_CODE, GENDER)
+print(grouped_gender_difination)
 ```
 
 ```{r}
@@ -76,5 +79,12 @@ data <- data %>%
   mutate(AGE_GROUP_CODE = str_replace(AGE_GROUP_CODE, "^(\\d{2})(\\d{2})$", "\\1-\\2")) %>%
   mutate(AGE_GROUP_CODE = ifelse(AGE_GROUP_CODE == "99-99", ">99", AGE_GROUP_CODE)) %>%
   mutate(AGE_GROUP_CODE = str_replace(AGE_GROUP_CODE, "^(\\d{2})-00$", "\\1"))
+```
+
+```{r}
+grouped_counts <- data %>%
+  group_by(CITY_CODE, AGE_GROUP_CODE) %>%
+  tally()
+print(grouped_counts)
 ```
 
