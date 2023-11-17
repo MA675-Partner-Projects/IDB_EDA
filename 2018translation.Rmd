@@ -1,6 +1,6 @@
 ---
 title: "2018translation"
-author: "Yuchen Huang"
+author: "Yuchen Huang" + "Yuta Tsukumo"
 date: "2023-10-29"
 output: html_document
 ---
