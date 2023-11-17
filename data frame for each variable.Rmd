@@ -1,0 +1,90 @@
+---
+title: "education level"
+author: "Yingmai Chen，YangXiao"
+date: "2023-11-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(tidyverse)
+
+# Read the data
+data <- read_csv("ZZ22.csv")
+
+# Count the number of people for each CITY_CODE and EDUCATION_LEVEL_CODE
+counts_education <- data %>%
+  count(CITY_CODE, EDUCATION_LEVEL_CODE)
+
+# View the result
+print(counts_education)
+
+```
+```{r}
+
+# Assuming the data is already read into an R dataframe named 'data'
+
+# Selecting unique EDUCATION_LEVEL_CODE and EDUCATION_LEVEL
+education_levels <- data %>%
+  select(EDUCATION_LEVEL_CODE, EDUCATION_LEVEL) %>%
+  distinct()
+
+# Print the unique education levels
+print(education_levels)
+
+```
+
+```{r}
+unique_cities <- data %>%
+  select(CITY_CODE, CITY_NAME) %>%
+  distinct()
+
+# Print the unique cities
+print(unique_cities)
+```
+
+```{r}
+counts_Marriage <- data %>%
+  count(CITY_CODE, MARITAL_STATUS_CODE)
+
+print(counts_Marriage)
+```
+```{r}
+MARITAL_STATUS <- data %>%
+  select(MARITAL_STATUS_CODE, MARITAL_STATUS) %>%
+  distinct()
+
+# Print the unique education levels
+print(MARITAL_STATUS)
+```
+```{r}
+grouped_gender <- data %>%
+  group_by(CITY_CODE, GENDER) %>%
+  tally()
+print(grouped_gender)
+```
+
+```{r}
+grouped_gender_difination<-data %>%
+  group_by(GENDER_CODE, GENDER) %>%
+  tally()%>%
+  select(GENDER_CODE, GENDER)
+print(grouped_gender_difination)
+```
+
+```{r}
+data <- data %>%
+  mutate(AGE_GROUP_CODE = str_replace(AGE_GROUP_CODE, "^(\\d{2})(\\d{2})$", "\\1-\\2")) %>%
+  mutate(AGE_GROUP_CODE = ifelse(AGE_GROUP_CODE == "99-99", ">99", AGE_GROUP_CODE)) %>%
+  mutate(AGE_GROUP_CODE = str_replace(AGE_GROUP_CODE, "^(\\d{2})-00$", "\\1"))
+```
+
+```{r}
+grouped_counts <- data %>%
+  group_by(CITY_CODE, AGE_GROUP_CODE) %>%
+  tally()
+print(grouped_counts)
+```
+
