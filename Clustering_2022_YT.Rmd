@@ -1,0 +1,350 @@
+---
+title: "Clustering Variables"
+author: "Yuta + Yuchen + Febriany"
+date: "2023-11-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(factoextra)
+```
+
+```{r}
+ZZ22 <- read.csv("translated_ZZ22.csv")
+```
+
+# Create new df accounting for the number of eligible voters in each row
+```{r}
+ZZ22_long <- ZZ22[rep(seq_len(nrow(ZZ22)), ZZ22$NUMBER_OF_VOTERS_PROFILE),]
+```
+
+# Wide format dataframe for Age Group
+```{r}
+ZZ22_wider_age <- ZZ22_long|>　
+  filter(!AGE_GROUP_CODE == -1) |>
+  group_by(CITY_NAME, AGE_GROUP_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = AGE_GROUP_CODE,
+    values_from = N)
+
+# transform from NA to 0
+ZZ22_wider_age[is.na(ZZ22_wider_age)] <- 0
+
+# add the variable shows total voters across ages
+ZZ22_wider_age <- ZZ22_wider_age |>
+  mutate(Total = rowSums(ZZ22_wider_age[, 2:23]))
+
+# change the order of age variables
+ZZ22_wider_age <- ZZ22_wider_age |>
+  select("CITY_NAME", "1600", "1700", "1800", "1900", "2000", "2124", "2529", "3034", "3539", "4044", "4549", "5054", "5559", "6064", "6569", "7074", "7579", "8084", "8589", "9094", "9599", "9999", "Total")
+
+# remove cities with total voters under 110 (average5 * 22 = 110) .
+ZZ22_wider_age_rm <- ZZ22_wider_age |>
+  filter(!Total < 110)
+# remained 105 cities (from 181 cities)
+
+# check the total number of each column(age category)
+colSums(ZZ22_wider_age_rm[, 2:24])
+```
+Wide format data frame for Marital Status
+```{r}
+ZZ22_wider_ms <- ZZ22_long|>　
+  filter(!MARITAL_STATUS_CODE == -1) |>
+  group_by(CITY_NAME, MARITAL_STATUS_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = MARITAL_STATUS_CODE,
+    values_from = N
+  ) 
+
+# transform from NA to 0
+ZZ22_wider_ms[is.na(ZZ22_wider_ms)] <- 0
+
+# add the variable shows total voters across marital
+ZZ22_wider_ms <- ZZ22_wider_ms |>
+  mutate(Total = rowSums(ZZ22_wider_ms[, 2:6]))
+
+# change the order of marital variables
+ZZ22_wider_ms <- ZZ22_wider_ms |>
+  select("CITY_NAME", "1", "3", "5", "7", "9", "Total")
+
+# remove cities with total voters under 110.
+ZZ22_wider_ms_rm <- ZZ22_wider_ms |>
+  filter(!Total < 110)
+# remained 105 cities (from 181 cities)
+
+# check the total number of each column(marital category)
+colSums(ZZ22_wider_ms_rm[, 2:7])
+```
+
+
+Wide format dataframe for Gender
+```{r}
+ZZ22_wider_gender <- ZZ22_long|>　
+  filter(!GENDER_CODE == -1) |>
+  group_by(CITY_NAME, GENDER_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = GENDER_CODE,
+    values_from = N
+  ) 
+
+# transform from NA to 0
+ZZ22_wider_gender[is.na(ZZ22_wider_gender)] <- 0
+
+# add the variable shows total voters across gender
+ZZ22_wider_gender <- ZZ22_wider_gender |>
+  mutate(Total = rowSums(ZZ22_wider_gender[, 2:3]))
+
+# remove cities with total voters under 110.
+ZZ22_wider_gender_rm <- ZZ22_wider_gender |>
+  filter(!Total < 110)
+
+# check the total number of each column(gender category)
+colSums(ZZ22_wider_gender_rm[, 2:4])
+```
+
+
+Wide format dataframe for Education Status
+```{r}
+ZZ22_wider_edu <- ZZ22_long|>　
+  filter(!EDUCATION_LEVEL_CODE == -1) |>
+  group_by(CITY_NAME, EDUCATION_LEVEL_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = EDUCATION_LEVEL_CODE,
+    values_from = N
+  ) 
+# transform from NA to 0
+ZZ22_wider_edu[is.na(ZZ22_wider_edu)] <- 0
+
+# add the variable shows total voters across gender
+ZZ22_wider_edu <- ZZ22_wider_edu |>
+  mutate(Total = rowSums(ZZ22_wider_edu[, 2:10]))
+
+# remove cities with total voters under 110.
+ZZ22_wider_edu_rm <- ZZ22_wider_edu |>
+  filter(!Total < 110)
+
+# check the total number of each column(education category)
+colSums(ZZ22_wider_edu_rm[, 2:11])
+```
+
+
+New category for education status
+```{r}
+ZZ22_long <- ZZ22_long |>
+  mutate(NEW_EDU_LEVEL_CODE = if_else(EDUCATION_LEVEL_CODE == 8, "3", if_else(EDUCATION_LEVEL_CODE %in% c(7,6) , "2", "1")))
+# 3: complete college, 2: complete high school, 1: other
+```
+
+```{r}
+ZZ22_wider_edu_new <- ZZ22_long|>　
+  filter(!NEW_EDU_LEVEL_CODE == -1) |>
+  group_by(CITY_NAME, NEW_EDU_LEVEL_CODE) |>
+  summarise(N = n(), .groups = 'drop') |>
+  pivot_wider(
+    names_from = NEW_EDU_LEVEL_CODE,
+    values_from = N
+  ) 
+# transform from NA to 0
+ZZ22_wider_edu_new[is.na(ZZ22_wider_edu_new)] <- 0
+
+# add the variable shows total voters across gender
+ZZ22_wider_edu_new <- ZZ22_wider_edu_new |>
+  mutate(Total = rowSums(ZZ22_wider_edu_new[, 2:4]))
+
+# remove cities with total voters under 110.
+ZZ22_wider_edu_rm_new <- ZZ22_wider_edu_new |>
+  filter(!Total < 110)
+
+# check the total number of each column(education category)
+colSums(ZZ22_wider_edu_rm_new[, 2:5])
+```
+
+
+```{r}
+# The Voters Distribution
+distri <- plot(ZZ22_wider_gender$Total, type = "p", pch = 16, col = "pink", xlab = "Index", ylab = "Total Voters", main = "Scatter Plot with Line Overlay")
+```
+
+```{r}
+# The Voters Distribution After Removed <100 total voters
+distri <- plot(ZZ22_wider_gender_rm$Total, type = "p", pch = 16, col = "purple", xlab = "Index", ylab = "Total Voters", main = "Scatter Plot with Line Overlay")
+```
+
+```{r}
+hist(ZZ22_wider_age$Total, breaks = 10, col = "blue", xlab = "Total Voters", ylab = "Frequency", main = "Distribution of Total Voters")
+```
+
+# clustering/MDS for categorical data
+```{r}
+dev_multinom <- function (x, y) # KL divergence
+  2 * sum(unlist(ifelse(x == 0 | y == 0, 0, x * log(x / y))))
+
+l2_dist <- function (x, y) 
+  sum((x - y) ^ 2)
+
+cat_dist <- function (x, y, deviance = FALSE, normalize = FALSE) {
+  wx <- sum(x); wy <- sum(y)
+  m <- (x + y) / (wx + wy) # center
+  x <- x / wx; y <- y / wy
+  D <- if (deviance) dev_multinom else l2_dist
+  if (normalize)
+    sqrt(.5 * wx / (wx + wy) * D(x, m)) + sqrt(.5 * wy  / (wx + wy) * D(y, m))
+  else
+    sqrt(.5 * wx * D(x, m)) + sqrt(.5 * wy * D(y, m))
+}
+
+# 
+ord_dist <- function (x, y, normalize = FALSE) {
+  wx <- sum(x); wy <- sum(y)
+  k <- length(x) # == length(y)
+  x <- cumsum(x)[-k]; y <- cumsum(y)[-k]
+  m <- (x + y) / (wx + wy) # center
+  x <- x / wx; y <- y / wy
+  if (normalize)
+    sqrt(wx / (wx + wy) * l2_dist(x, m)) + sqrt(wy / (wx + wy) * l2_dist(y, m))
+  else
+    sqrt(wx * l2_dist(x, m)) + sqrt(wy * l2_dist(y, m))
+}
+```
+
+# use in tibbles
+```{r}
+# library(tidyverse)
+
+lower2dist <- function (m) {
+  m <- as.matrix(m)
+  n <- nrow(m) + 1 # == ncol(m) + 1
+  d <- matrix(0, n, n)
+  d[2:n, 1:(n - 1)] <- m
+  as.dist(d)
+}
+
+tibble2dist <- function (t, dist_f, data_fields, ...) {
+  t1 <- t |> mutate(id_ = row_number()) |> nest(data = all_of(data_fields))
+  inner_join(t1, t1, by = join_by(id_ < id_)) |>
+    mutate(dist = map2_dbl(data.x, data.y, dist_f, ...)) |>
+    select(id_.x, id_.y, dist) |> spread(id_.x, dist, fill = 0) |>
+    column_to_rownames(var = "id_.y") |> lower2dist()
+}
+
+
+plot_dist <- function (d, labels = seq_len(attr(d, "Size")), pos = 1, ...) {
+  op <- par(mfrow = c(1, 2))
+  plot(hclust(d, ...)) # hierarchical clustering
+  z <- cmdscale(d) # classic multidimensional scaling (MDS)
+  plot(z[,1], z[,2], xlab = "MDS1", ylab = "MDS2")
+  text(z[,1], z[,2], labels, pos = pos)
+  par(op)
+  invisible(z)
+}
+```
+
+
+# Clustering for Age 
+```{r}
+data_fields_age <- colnames(ZZ22_wider_age_rm)[-c(1, 24)]
+#(d <- tibble2dist(ZZ22_wider_age_rm, cat_dist, data_fields_age))
+#(d <- tibble2dist(ZZ22_wider_age_rm, cat_dist, data_fields_age, deviance = TRUE))
+(d_age <- tibble2dist(ZZ22_wider_age_rm, ord_dist, data_fields_age, normalize = TRUE))
+plot_dist(d_age, labels = ZZ22_wider_age_rm$CITY_NAME, pos = 1)
+
+# Assign K = 2
+h_age<-hcut(d_age, k=2, hc_method = "complete", stand = F)
+
+# cluster size
+h_age$size
+
+# Get the cluster assignment for each city
+clusters_age <- cutree(h_age, k = 2)
+
+# color the dendrogram
+fviz_dend(h_age, rect = TRUE, k = 2, main = "Dendrogram with Cluster Assignments")
+
+# color the clusters
+z_age <- cmdscale(d_age) # classic multidimensional scaling (MDS)
+plot(z_age[,1], z_age[,2], xlab = "MDS1", ylab = "MDS2", col = clusters_age)
+```
+Clustering for Marital Status
+
+```{r}
+data_fields_ms <- colnames(ZZ22_wider_ms_rm) [-c(1, 7)]
+# (d_ms <- tibble2dist(ZZ22_wider_ms_rm, cat_dist, data_fields_ms))
+(d_ms <- tibble2dist(ZZ22_wider_ms_rm, cat_dist, data_fields_ms, deviance = TRUE, normalize = TRUE))
+# (d_ms <- tibble2dist(ZZ22_wider_ms, ord_dist, data_fields_ms))
+plot_dist(d_ms, labels = ZZ22_wider_ms_rm$CITY_NAME)
+
+# Assign K = 3
+h_ms<-hcut(d_ms, k=4, hc_method = "complete", stand = F)
+
+# cluster size
+h_ms$size
+
+# Get the cluster assignment for each city
+clusters_ms <- cutree(h_ms, k = 4)
+
+fviz_dend(h_ms, rect = TRUE, k = 4, main = "Dendrogram with Cluster Assignments")
+
+# color the clusters
+z_ms <- cmdscale(d_ms) # classic multidimensional scaling (MDS)
+plot(z_ms[,1], z_ms[,2], xlab = "MDS1", ylab = "MDS2", col = clusters_ms)
+```
+Clustering for Gender
+
+```{r}
+data_fields_gen <- colnames(ZZ22_wider_gender_rm) [-c(1, 4)]
+#(d2 <- tibble2dist(ZZ22_wider_gender_rm, cat_dist, data_fields_gen))
+(d_gen <- tibble2dist(ZZ22_wider_gender_rm, cat_dist, data_fields_gen, deviance = TRUE, normalize = TRUE))
+#(d <- tibble2dist(ZZ22_wider_ms, ord_dist, data_fields_gen))
+plot_dist(d_gen, labels = ZZ22_wider_gender_rm$CITY_NAME)
+
+# Assign K = 4
+h_gen<-hcut(d_gen, k=4, hc_method = "complete", stand = F)
+
+# cluster size
+h_gen$size
+
+# Get the cluster assignment for each city
+clusters_gen <- cutree(h_gen, k = 4)
+
+fviz_dend(h_gen, rect = TRUE, k = 4, main = "Dendrogram with Cluster Assignments")
+
+# color the clusters
+z_gen <- cmdscale(d_gen) # classic multidimensional scaling (MDS)
+plot(z_gen[,1], z_gen[,2], xlab = "MDS1", ylab = "MDS2", col = clusters_gen)
+```
+
+Clustering for Education
+
+```{r}
+data_fields_edu <- colnames(ZZ22_wider_edu_rm_new) [-c(1, 5)]
+#(d2 <- tibble2dist(ZZ22_wider_edu_rm_new, cat_dist, data_fields_edu))
+#(d2 <- tibble2dist(ZZ22_wider_gender_rm, cat_dist, data_fields_edu, deviance = TRUE))
+(d_edu <- tibble2dist(ZZ22_wider_edu_rm_new, ord_dist, data_fields_edu, normalize = TRUE))
+plot_dist(d_edu, labels = ZZ22_wider_edu_rm_new$CITY_NAME)
+
+# Assign K = 3
+h_edu<-hcut(d_edu, k = 3, hc_method = "complete", stand = F)
+
+# cluster size
+h_edu$size
+
+# Get the cluster assignment for each city
+clusters_edu <- cutree(h_edu, k = 3)
+
+fviz_dend(h_edu, rect = TRUE, k = 3, main = "Dendrogram with Cluster Assignments")
+
+# color the clusters
+z_edu <- cmdscale(d_edu) # classic multidimensional scaling (MDS)
+plot(z_edu[,1], z_edu[,2], xlab = "MDS1", ylab = "MDS2", col = clusters_edu)
+```
+
