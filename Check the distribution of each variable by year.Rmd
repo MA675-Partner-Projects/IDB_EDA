@@ -1,0 +1,567 @@
+---
+title: "Check the distribution of each variable by year"
+author: "Yuta Tsukumo"
+date: "2023-11-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(gridExtra)
+```
+
+```{r}
+ZZ22 <- read.csv("translated_ZZ22.csv")
+ZZ22_long <- ZZ22[rep(seq_len(nrow(ZZ22)), ZZ22$NUMBER_OF_VOTERS_PROFILE),]
+```
+
+Identify the three most populous cities.
+```{r}
+ZZ22_long |> 
+  group_by(CITY_NAME) |>
+  summarise(Total = n(), .groups = 'drop') |>
+  arrange(-Total)
+# 1. Lisbon 2. Miami, 3.Boston
+```
+
+We will check the distribution of variables(Age, Marital Status, Gender, Educational Status) in these five cities in 2014, 2018, and 2022
+
+Read 2018, 2014 data
+```{r}
+ZZ18 <- read.csv("translated_ZZ18.csv")
+ZZ18_long <- ZZ22[rep(seq_len(nrow(ZZ18)), ZZ18$NUMBER_OF_VOTERS_PROFILE),]
+
+ZZ14 <- read.csv("translated_ZZ14.csv")
+ZZ14_long <- ZZ14[rep(seq_len(nrow(ZZ14)), ZZ14$NUMBER_OF_VOTERS_PROFILE),]
+```
+
+# Lisbon / Age
+```{r}
+Lisbon_age_2022 <- ZZ22_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Lisbon (2022)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Lisbon_age_2018 <- ZZ18_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Lisbon (2018)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Lisbon_age_2014 <-  ZZ14_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Lisbon (2014)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+grid.arrange(Lisbon_age_2022, Lisbon_age_2018, Lisbon_age_2014,ncol = 1, nrow = 3)
+```
+# Miami / Age
+```{r}
+Miami_age_2022 <- ZZ22_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Miami (2022)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Miami_age_2018 <- ZZ18_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Miami (2018)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Miami_age_2014 <-  ZZ14_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Miami (2014)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+grid.arrange(Miami_age_2022, Miami_age_2018, Miami_age_2014,ncol = 1, nrow = 3)
+```
+
+# Boston / Age
+```{r}
+Boston_age_2022 <- ZZ22_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Boston (2022)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Boston_age_2018 <- ZZ18_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Boston (2018)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Boston_age_2014 <-  ZZ14_long |> 
+  mutate(AGE_GROUP = as.factor(AGE_GROUP)) |>
+  group_by(CITY_NAME, AGE_GROUP) |>
+  summarise(Total = length(AGE_GROUP), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = AGE_GROUP, y = Total, fill = AGE_GROUP)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Age Groups in Miami (2014)",
+       x = "Age Group",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+grid.arrange(Boston_age_2022, Boston_age_2018, Boston_age_2014,ncol = 1, nrow = 3)
+```
+
+# Lisbon / Marital Status
+```{r}
+Lisbon_marital_2022 <- ZZ22_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Lisbon (2022)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Lisbon_marital_2018 <- ZZ18_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Lisbon (2018)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Lisbon_marital_2014 <- ZZ14_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Lisbon (2014)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+grid.arrange(Lisbon_marital_2022, Lisbon_marital_2018, Lisbon_marital_2014,
+             ncol = 3)
+```
+
+# Miami / Marital Status
+```{r}
+Miami_marital_2022 <- ZZ22_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Miami (2022)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Miami_marital_2018 <- ZZ18_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Miami (2018)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Miami_marital_2014 <- ZZ14_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Miami (2014)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+grid.arrange(Miami_marital_2022, Miami_marital_2018, Miami_marital_2014,
+             ncol = 3)
+```
+
+# Boston / Marital Status
+```{r}
+Boston_marital_2022 <- ZZ22_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Boston (2022)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Boston_marital_2018 <- ZZ18_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Boston (2018)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Boston_marital_2014 <- ZZ14_long |> 
+  mutate(MARITAL_STATUS = as.factor(MARITAL_STATUS)) |>
+  group_by(CITY_NAME, MARITAL_STATUS) |>
+  summarise(Total = length(MARITAL_STATUS), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = MARITAL_STATUS, y = Total, fill = MARITAL_STATUS)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Marital Status in Boston (2014)",
+       x = "Marital Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+grid.arrange(Boston_marital_2022, Boston_marital_2018, Boston_marital_2014,
+             ncol = 3)
+```
+
+# Lisbon / Gender
+```{r}
+Lisbon_gender_2022 <- ZZ22_long |> 
+  mutate(GENDER = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Lisbon (2022)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Lisbon_gender_2018 <- ZZ18_long |> 
+  mutate(GENDER = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Lisbon (2018)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Lisbon_gender_2014 <- ZZ14_long |> 
+  mutate(GENDER = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Lisbon (2014)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　　
+
+grid.arrange(Lisbon_gender_2022, Lisbon_gender_2018, Lisbon_gender_2014,
+             ncol = 3)
+```
+
+# Miami / Gender
+```{r}
+Miami_gender_2022 <- ZZ22_long |> 
+  mutate(GENDER = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Miami (2022)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Miami_gender_2018 <- ZZ18_long |> 
+  mutate(GENDER = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Miami (2018)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Miami_gender_2014 <- ZZ14_long |> 
+  mutate(Miami = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Miami (2014)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　　
+
+grid.arrange(Miami_gender_2022, Miami_gender_2018, Miami_gender_2014,
+             ncol = 3)
+```
+
+# Boston / Gender
+```{r}
+Boston_gender_2022 <- ZZ22_long |> 
+  mutate(GENDER = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Boston (2022)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Boston_gender_2018 <- ZZ18_long |> 
+  mutate(GENDER = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Boston (2018)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Boston_gender_2014 <- ZZ14_long |> 
+  mutate(GENDER = as.factor(GENDER)) |>
+  group_by(CITY_NAME, GENDER) |>
+  summarise(Total = length(GENDER), .groups = 'drop') |>
+  filter(CITY_NAME == "BOSTON")  |>
+  ggplot(aes(x = GENDER, y = Total, fill = GENDER)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Gender in Boston (2014)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　　
+
+grid.arrange(Boston_gender_2022, Boston_gender_2018, Boston_gender_2014,
+             ncol = 3)
+```
+
+
+# Lisbon / Education
+```{r}
+Lisbon_educ_2022 <- ZZ22_long |> 
+  mutate(EDUCATION_LEVEL = as.factor(EDUCATION_LEVEL)) |>
+  group_by(CITY_NAME, EDUCATION_LEVEL) |>
+  summarise(Total = length(EDUCATION_LEVEL), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = EDUCATION_LEVEL, y = Total, fill = EDUCATION_LEVEL)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Education Level in Lisbon (2022)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Lisbon_educ_2018 <- ZZ18_long |> 
+  mutate(EDUCATION_LEVEL = as.factor(EDUCATION_LEVEL)) |>
+  group_by(CITY_NAME, EDUCATION_LEVEL) |>
+  summarise(Total = length(EDUCATION_LEVEL), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = EDUCATION_LEVEL, y = Total, fill = EDUCATION_LEVEL)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Education Level in Lisbon (2018)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+
+Lisbon_educ_2014 <- ZZ14_long |> 
+  mutate(EDUCATION_LEVEL = as.factor(EDUCATION_LEVEL)) |>
+  group_by(CITY_NAME, EDUCATION_LEVEL) |>
+  summarise(Total = length(EDUCATION_LEVEL), .groups = 'drop') |>
+  filter(CITY_NAME == "LISBON")  |>
+  ggplot(aes(x = EDUCATION_LEVEL, y = Total, fill = EDUCATION_LEVEL)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Education Level in Lisbon (2014)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　　
+
+grid.arrange(Lisbon_educ_2022, Lisbon_educ_2018, Lisbon_educ_2014,
+             ncol = 3)
+```
+
+# Miami / Education
+```{r}
+Miami_educ_2022 <- ZZ22_long |> 
+  mutate(EDUCATION_LEVEL = as.factor(EDUCATION_LEVEL)) |>
+  group_by(CITY_NAME, EDUCATION_LEVEL) |>
+  summarise(Total = length(EDUCATION_LEVEL), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = EDUCATION_LEVEL, y = Total, fill = EDUCATION_LEVEL)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Education Level in Miami (2022)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+Miami_educ_2018 <- ZZ18_long |> 
+  mutate(EDUCATION_LEVEL = as.factor(EDUCATION_LEVEL)) |>
+  group_by(CITY_NAME, EDUCATION_LEVEL) |>
+  summarise(Total = length(EDUCATION_LEVEL), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = EDUCATION_LEVEL, y = Total, fill = EDUCATION_LEVEL)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Education Level in Maimi (2018)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　
+
+
+Miami_educ_2014 <- ZZ14_long |> 
+  mutate(EDUCATION_LEVEL = as.factor(EDUCATION_LEVEL)) |>
+  group_by(CITY_NAME, EDUCATION_LEVEL) |>
+  summarise(Total = length(EDUCATION_LEVEL), .groups = 'drop') |>
+  filter(CITY_NAME == "MIAMI")  |>
+  ggplot(aes(x = EDUCATION_LEVEL, y = Total, fill = EDUCATION_LEVEL)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribution of Education Level in Miami (2014)",
+       x = "Gender Status",
+       y = "Total Count") +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))　　
+
+grid.arrange(Miami_educ_2022, Miami_educ_2018, Miami_educ_2014,
+             ncol = 3)
+```
