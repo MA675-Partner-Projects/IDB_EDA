@@ -230,7 +230,7 @@ ZZ14$CITY_NAME <- ifelse(ZZ14$CITY_NAME %in% names(city_name_t),
 ZZ14 <- ZZ14 |>
   separate_wider_delim(cols = CITY_NAME,
                        delim = "-",
-                       names = c("City", "Country"),
+                       names = c("CITY_NAME", "COUNTRY_NAME"),
                        too_few = "error",
                        too_many = "merge")
 ```
