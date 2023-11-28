@@ -37,11 +37,7 @@ print(education_levels)
 ```
 
 ```{r}
-unique_cities <- data %>%
-  select(CITY_CODE, CITY_NAME) %>%
-  distinct()
-
-# Print the unique cities
+unique_cities<-read.csv("unique_cities.csv")
 print(unique_cities)
 ```
 
