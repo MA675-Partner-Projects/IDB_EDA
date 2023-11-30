@@ -2,9 +2,9 @@
 
 library(tidyverse)
 
-ZZ22_1 <- read.csv("CLEAN_ZZ22.csv")
-ZZ18_1 <- read.csv("CLEAN_ZZ18.csv")
-ZZ14_1 <- read.csv("CLEAN_ZZ14.csv")
+ZZ22_1 <- read.csv("CLEANZZ22.csv")
+ZZ18_1 <- read.csv("CLEANZZ18.csv")
+ZZ14_1 <- read.csv("CLEANZZ14.csv")
 
 df1 <- ZZ22_1 |>   distinct(CITY_NAME, .keep_all = TRUE) |>   select(CITY_CODE, CITY_NAME) 
 
