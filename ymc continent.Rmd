@@ -1,0 +1,66 @@
+---
+title: "continent"
+author: "Yingmai Chen"
+date: "2023-12-20"
+output: html_document
+---
+
+```{r}
+
+library(tidyverse)
+library(readr)
+
+df_translated<- read_csv("translated_ZZ14.csv")
+df_unique_cities <- read_csv("unique_cities.csv")
+
+# Create a mapping of city names to continents
+city_continent_mapping <- setNames(df_unique_cities$CONTINENT, df_unique_cities$CITY_NAME)
+
+# Add the CONTINENT column based on CITY_NAME
+df_translated <- df_translated %>%
+  mutate(CONTINENT = city_continent_mapping[CITY_NAME])
+
+# Remove rows with missing values
+df_translated_cleaned <- df_translated %>%
+  drop_na()
+
+# Write the cleaned dataframe to a new CSV file
+write_csv(df_translated_cleaned, "ClEANZZ14.csv")
+```
+```{r}
+df_translated<- read_csv("translated_ZZ18.csv")
+
+# Create a mapping of city names to continents
+city_continent_mapping <- setNames(df_unique_cities$CONTINENT, df_unique_cities$CITY_NAME)
+
+# Add the CONTINENT column based on CITY_NAME
+df_translated <- df_translated %>%
+  mutate(CONTINENT = city_continent_mapping[CITY_NAME])
+
+# Remove rows with missing values
+df_translated_cleaned <- df_translated %>%
+  drop_na()
+
+# Write the cleaned dataframe to a new CSV file
+write_csv(df_translated_cleaned, "ClEANZZ18.csv")
+```
+
+
+```{r}
+df_translated<- read_csv("translated_ZZ22.csv")
+
+# Create a mapping of city names to continents
+city_continent_mapping <- setNames(df_unique_cities$CONTINENT, df_unique_cities$CITY_NAME)
+
+# Add the CONTINENT column based on CITY_NAME
+df_translated <- df_translated %>%
+  mutate(CONTINENT = city_continent_mapping[CITY_NAME])
+
+# Remove rows with missing values
+df_translated_cleaned <- df_translated %>%
+  drop_na()
+
+# Write the cleaned dataframe to a new CSV file
+write_csv(df_translated_cleaned, "ClEANZZ22.csv")
+```
+

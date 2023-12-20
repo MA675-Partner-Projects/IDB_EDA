@@ -1,0 +1,190 @@
+CITY_CODE,CITY_NAME,COUNTRY,CONTINENT
+29173,KATHMANDU,Nepal,Asia
+29254,ABIDJAN,Ivory Coast,Africa
+29262,ABU DHABI,United Arab Emirates,Asia
+29270,ACCRA,Ghana,Africa
+29297,ANKARA,Turkey,Asia
+29300,ALGIERS,Algeria,Africa
+29319,ARTIGAS,Uruguay,South America
+29327,ASUNCION,Paraguay,South America
+29955,LISBON,Portugal,Europe
+30228,NEW YORK,United States,North America
+30244,OSLO,Norway,Europe
+30252,OTTAWA,Canada,North America
+30260,PANAMA CITY,Panama,North America
+30279,PARAMARIBO,Suriname,South America
+30961,FARO,Portugal,Europe
+30988,SARAJEVO,Bosnia and Herzegovina,Europe
+38881,BELMOPAN,Belize,North America
+38903,CONAKRY,Guinea,Africa
+38920,COTONOU,Benin, Africa
+38962,DAR ES SALAAM,Tanzania,Africa
+38989,YEREVAN,Armenia,Asia
+39004,MENDOZA,Argentina,South America
+39020,ZAGREB,Croatia,Europe
+39063,VANCOUVER,Canada,North America
+39080,ATLANTA,United States,North America
+30503,SAN FRANCISCO,United States,North America
+30511,SAN JOSE,United States,North America
+30520,SAN SALVADOR,El Salvador,North America
+30538,SEOUL,South Korea,Asia
+30546,SOFIA,Bulgaria,Europe
+30562,SYDNEY,Australia,Australia
+30120,MILAN,Italy,Europe
+30198,NAGOYA,Japan,Asia
+30066,MADRID,Spain,Europe
+30074,MANAGUA,Nicaragua,North America
+30082,MANILA,Philippines,Asia
+30090,MAPUTO,Mozambique,Africa
+30104,MEXICO CITY,Mexico,North America
+30112,MIAMI,United States,North America
+29971,LONDON,United Kingdom,Europe
+39102,MUSCAT,Oman,Asia
+39128,BAKU,Azerbaijan,Asia
+39160,LJUBLJANA,Slovenia,Europe
+39187,BRAZZAVILLE,Republic of the Congo,Africa
+39209,BRATISLAVA,Slovakia,Europe
+39225,SAO TOME,Sao Tome and Principe,Africa
+39241,NUR-SULTAN,Kazakhstan,Asia
+39263,MALABO,Equatorial Guinea,Africa
+39284,OUAGADOUGOU,Burkina Faso,Africa
+39306,ISTANBUL,Turkey,Asia/Europe
+39322,NICOSIA,Cyprus,Asia/Europe
+98000,GUATEMALA CITY,Guatemala,North America
+99104,TBILISI,Georgia,Asia/Europe
+99139,TIRANA,Albania,Europe
+99147,SAINT JOHNS,Antigua and Barbuda,North America
+99155,PUERTO IGUAZU,Argentina,South America
+99171,BAGHDAD,Iraq,Asia
+99180,NASSAU,Bahamas,North America
+99198,ABUJA,Nigeria,Africa
+99210,COBIJA,Bolivia,South America
+99236,PUERTO QUIJARRO,Bolivia,South America
+99244,RIVERA,Uruguay,South America
+99252,VATICAN CITY,Vatican City,Europe
+99287,LUSAKA,Zambia,Africa
+99317,TALLINN,Estonia,Europe
+99325,ADDIS ABABA,Ethiopia,Africa
+99333,SAINT-GEORGES-DE-L'OYAPOCK,French Guiana (France),South America
+99341,LILONGWE,Malawi,Africa
+99350,BAMAKO,Mali,Africa
+99376,YANGON,Myanmar,Asia
+99384,CASTRIES,Saint Lucia,North America
+99430,KINGSTON,Jamaica,North America
+99473,MANAMA,Bahrain,Asia
+30627,TOKYO,Japan,Asia
+30147,MONTEVIDEO,Uruguay,South America
+30155,MONTREAL,Canada,North America
+29335,ATHENS,Greece,Europe
+29343,BANGKOK,Thailand,Asia
+29351,BARCELONA,Spain,Europe
+30287,PARIS,France,Europe
+30201,NAIROBI,Kenya,Africa
+30210,NEW DELHI,India,Asia
+29980,LOS ANGELES,United States,North America
+29386,BERLIN,Germany,Europe
+29394,BISSAU,Guinea-Bissau,Africa
+29408,BOGOTA,Colombia,South America
+29416,BOSTON,United States,North America
+30295,PASO DE LOS LIBRES,Argentina,South America
+30309,PEDRO JUAN CABALLERO,Paraguay,South America
+30317,BEIJING,China,Asia
+30325,PORT OF SPAIN,Trinidad and Tobago,North America
+30333,PORT-AU-PRINCE,Haiti,North America
+30341,PORTO,Portugal,Europe
+30570,TAIPEI,Taiwan,Asia
+30597,TEHRAN,Iran,Asia
+30600,TEGUCIGALPA,Honduras,North America
+30619,TEL AVIV,Israel,Asia
+29998,LUANDA,Angola,Africa
+29467,BUENOS AIRES,Argentina,South America
+29475,CAYENNE,French Guiana,South America
+29483,CAIRO,Egypt,Africa
+29491,CAMBERRA,Australia,Australia
+29505,CARACAS,Venezuela,South America
+29513,CHICAGO,United States,North America
+29360,BEIRUT,Lebanon,Asia
+29378,BELGRADE,Serbia,Europe
+29963,LOME,Togo,Africa
+30635,TORONTO,Canada,North America
+30163,MOSCOW,Russia,Europe/Asia
+30171,MUMBAI,India,Asia
+30180,MUNICH,Germany,Europe
+30651,GUANGZHOU,China,Asia
+30669,GABORONE,Botswana,Africa
+30686,TRIPOLI,Libya,Africa
+30708,TUNIS,Tunisia,Africa
+30740,WARSAW,Poland,Europe
+30767,VIENNA,Austria,Europe
+30350,PRAGUE,Czech Republic,Europe
+30368,PRAIA,Cape Verde,Africa
+30376,PRETORIA,South Africa,Africa
+30392,QUITO,Ecuador,South America
+30783,WASHINGTON,United States,North America
+29521,CHUY,Uruguay,South America
+29530,CAPE TOWN,South Africa,Africa
+29548,SINGAPORE,Singapore,Asia
+29556,CIUDAD DEL ESTE,Paraguay,South America
+30406,RABAT,Morocco,Africa
+30414,RAMALLAH,Palestine,Asia
+30422,RIYADH,Saudi Arabia,Asia
+30430,RIO BRANCO,Brazil,South America
+30449,ROME,Italy,Europe
+30805,WELLINGTON,New Zealand,Oceania
+30821,WINDHOEK,Namibia,Africa
+30848,SHANGHAI,China,Asia
+30864,ZURICH,Switzerland,Europe
+29661,DUBLIN,Ireland,Europe
+29670,ENCARNACION,Paraguay,South America
+29688,STOCKHOLM,Sweden,Europe
+29696,FRANKFURT,Germany,Europe
+29424,BRIDGETOWN,Barbados,North America
+29432,BRUSSELS,Belgium,Europe
+30457,AMSTERDAM,Netherlands,Europe
+30465,SALTO DEL GUAIRA,Paraguay,South America
+29564,CIUDAD GUAYANA,Venezuela,South America
+29572,COCHABAMBA,Bolivia,South America
+29580,CONCEPCION,Chile,South America
+29599,COPENHAGEN,Denmark,Europe
+29602,CORDOBA,Argentina,South America
+29610,DAKAR,Senegal,Africa
+29637,DAMASCUS,Syria,Asia
+29645,DILI,East Timor,Oceania
+29653,DOHA,Qatar,Asia
+29440,BUCHAREST,Romania,Europe
+29459,BUDAPEST,Hungary,Europe
+30473,SANTA CRUZ DE LA SIERRA,Bolivia,South America
+30481,SANTIAGO,Chile,South America
+30490,SANTO DOMINGO,Dominican Republic,North America
+30902,HARTFORD,United States,North America
+30929,COLOMBO,Sri Lanka,Asia
+29700,GENEVA,Switzerland,Europe
+29718,GEORGETOWN,Guyana,South America
+29742,HAMAMATSU,Japan,Asia
+29750,HANOI,Vietnam,Asia
+29769,HARARE,Zimbabwe,Africa
+29777,HAVANA,Cuba,North America
+29785,HELSINKI,Finland,Europe
+29793,HONG KONG,Hong Kong,Asia
+29807,HOUSTON,United States,North America
+29815,DJIBOUTI,Djibouti,Africa
+29823,IQUITOS,Peru,South America
+29831,ISLAMABAD,Pakistan,Asia
+29840,JAKARTA,Indonesia,Asia
+29858,KIEV,Ukraine,Europe
+29874,KINSHASA,Democratic Republic of the Congo,Africa
+29882,KUWAIT CITY,Kuwait,Asia
+29890,KUALA LUMPUR,Malaysia,Asia
+29904,LA PAZ,Bolivia,South America
+29912,LAGOS,Nigeria,Africa
+29939,LIBREVILLE,Gabon,Africa
+29947,LIMA,Peru,South America
+29262,ABU DHABI,THE UNITED ARAB EMIRATES,Asia
+29289,UNKNOWN,UNKNOWN,Cannot be determined
+30511,SAN JOSE,COSTA RICA,North America
+39187,BRAZZAVILLE,CONGO,Africa
+39225,SAO TOME,Democratic Republic of S?o Tom¨¦ and Pr¨ªncipe,Africa
+30350,PRAGUE,CZECH,Europe
+30414,RAMALLAH,PALESTINIAN,Asia
+30490,SANTO DOMINGO,DOMINICAN REPUBLIC'S,North America
+29874,KINSHASA,CONGO,Africa
