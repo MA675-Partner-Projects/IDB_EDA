@@ -1,0 +1,283 @@
+---
+title: "Clustering_Analysis_Complete"
+author: "Xiao Yang + Yuta Tsukumo"
+date: "2023-12-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+set.seed(123)
+```
+
+
+```{r}
+library(tidyverse)
+library(cluster)
+library(factoextra)
+library(dendextend)
+library(proxy)
+library(stats)
+```
+
+```{r}
+df_2022 <- read.csv("CLEANZZ22.csv", encoding='ISO-8859-1')
+df_2018 <- read.csv("CLEANZZ18.csv", encoding='ISO-8859-1')
+df_2014 <- read.csv("CLEANZZ14.csv", encoding='ISO-8859-1')
+```
+
+```{r}
+# Function to create a long format dataframe
+create_long_format <- function(df) {
+  return(df[rep(seq_len(nrow(df)), df$NUMBER_OF_VOTERS_PROFILE), ])
+}
+```
+
+```{r}
+# Function to create wide format dataframes for each category
+create_wide_format <- function(df_long) {
+  df_wide_ms <- table(df_long$CITY_NAME, df_long$MARITAL_STATUS_CODE)
+  df_wide_gender <- table(df_long$CITY_NAME, df_long$GENDER_CODE)
+  df_wide_education <- table(df_long$CITY_NAME, df_long$EDUCATION_LEVEL_CODE)
+  df_wide_age <- table(df_long$CITY_NAME, df_long$AGE_GROUP_CODE)
+  return(list(df_wide_ms, df_wide_gender, df_wide_education, df_wide_age))
+}
+```
+
+```{r}
+# Process 2022 data 
+df_long_2022 <- create_long_format(df_2022)
+
+df_wide_list_2022 <- create_wide_format(df_long_2022)
+
+df_wide_ms_2022 <- df_wide_list_2022[[1]]
+df_wide_gender_2022 <- df_wide_list_2022[[2]]
+df_wide_education_2022 <- df_wide_list_2022[[3]]
+df_wide_age_2022 <- df_wide_list_2022[[4]]
+```
+
+```{r}
+# To reduce noise in later analyses, we extracted only cities that contained an average of 5 or more counts per cell in the age variable that contained the most categories (22 total).
+filtered_cities_2022 <- rownames(df_wide_age_2022[rowSums(df_wide_age_2022) >= 110,])
+```
+
+```{r}
+# Apply the same set of cities for 2014 and 2018 data
+df_2014 <- df_2014[df_2014$CITY_NAME %in% filtered_cities_2022,]
+df_2018 <- df_2018[df_2018$CITY_NAME %in% filtered_cities_2022,]
+```
+
+```{r}
+# Process each year's data
+df_long_2014 <- create_long_format(df_2014)
+df_wide_list_2014 <- create_wide_format(df_long_2014)
+df_wide_ms_2014 <- df_wide_list_2014[[1]]
+df_wide_gender_2014 <- df_wide_list_2014[[2]]
+df_wide_education_2014 <- df_wide_list_2014[[3]]
+df_wide_age_2014 <- df_wide_list_2014[[4]]
+
+df_long_2018 <- create_long_format(df_2018)
+df_wide_list_2018 <- create_wide_format(df_long_2018)
+df_wide_ms_2018 <- df_wide_list_2018[[1]]
+df_wide_gender_2018 <- df_wide_list_2018[[2]]
+df_wide_education_2018 <- df_wide_list_2018[[3]]
+df_wide_age_2018 <- df_wide_list_2018[[4]]
+```
+
+```{r}
+# Ensure the same set of cities in the same order for all years
+common_cities <- intersect(intersect(rownames(df_wide_ms_2022), rownames(df_wide_ms_2018)), rownames(df_wide_ms_2014))
+
+filter_common_cities <- function(df_wide, common_cities) {
+  return(df_wide[rownames(df_wide) %in% common_cities,])
+}
+
+df_wide_ms_2022_filtered <- filter_common_cities(df_wide_ms_2022, common_cities)
+df_wide_gender_2022_filtered <- filter_common_cities(df_wide_gender_2022, common_cities)
+df_wide_education_2022_filtered <- filter_common_cities(df_wide_education_2022, common_cities)
+df_wide_age_2022_filtered <- filter_common_cities(df_wide_age_2022, common_cities)
+
+df_wide_ms_2018_filtered <- filter_common_cities(df_wide_ms_2018, common_cities)
+df_wide_gender_2018_filtered <- filter_common_cities(df_wide_gender_2018, common_cities)
+df_wide_education_2018_filtered <- filter_common_cities(df_wide_education_2018, common_cities)
+df_wide_age_2018_filtered <- filter_common_cities(df_wide_age_2018, common_cities)
+                                                     
+df_wide_ms_2014_filtered <- filter_common_cities(df_wide_ms_2014, common_cities)
+df_wide_gender_2014_filtered <- filter_common_cities(df_wide_gender_2014, common_cities)
+df_wide_education_2014_filtered <- filter_common_cities(df_wide_education_2014, common_cities)
+df_wide_age_2014_filtered <- filter_common_cities(df_wide_age_2014, common_cities)
+```
+
+```{r}
+# Custom distance functions for categorical and ordinal data
+dev_multinom <- function(x, y) {
+  # Kullback-Leibler divergence
+  return(2 * sum(ifelse((x == 0) | (y == 0), 0, x * log(x / y))))
+}
+
+l2_dist <- function(x, y) {
+  # L2 (Euclidean) distance
+  return(sum((x - y)^2))
+}
+
+cat_dist <- function(x, y, deviance=TRUE, normalize=TRUE) {
+  wx <- sum(x)
+  wy <- sum(y)
+  m <- (x + y) / (wx + wy)  # center
+  x <- x / wx
+  y <- y / wy
+  D <- ifelse(deviance, dev_multinom, l2_dist)
+  if (normalize) {
+    return(sqrt(0.5 * wx / (wx + wy) * D(x, m)) + sqrt(0.5 * wy / (wx + wy) * D(y, m)))
+  } else {
+    return(sqrt(0.5 * wx * D(x, m)) + sqrt(0.5 * wy * D(y, m)))
+  }
+}
+
+ord_dist <- function(x, y, normalize=TRUE) {
+  wx <- sum(x)
+  wy <- sum(y)
+  k <- length(x)  # should be equal to length(y)
+  x <- cumsum(x)[-k]
+  y <- cumsum(y)[-k]
+  m <- (x + y) / (wx + wy)  # center
+  x <- x / wx
+  y <- y / wy
+  if (normalize) {
+    return(sqrt(wx / (wx + wy) * l2_dist(x, m)) + sqrt(wy / (wx + wy) * l2_dist(y, m)))
+  } else {
+    return(sqrt(wx * l2_dist(x, m)) + sqrt(wy * l2_dist(y, m)))
+  }
+}
+```
+
+```{r}
+# Function to calculate combined distance matrix for each year
+calculate_combined_distance_matrix <- function(df_wide_ms, df_wide_gender, df_wide_education, df_wide_age) {
+  dist_matrix_ms <- as.matrix(dist(df_wide_ms, method=cat_dist))
+  dist_matrix_gender <- as.matrix(dist(df_wide_gender, method=cat_dist))
+  dist_matrix_education <- as.matrix(dist(df_wide_education, method=ord_dist))
+  dist_matrix_age <- as.matrix(dist(df_wide_age, method=ord_dist))
+  return(dist_matrix_ms + dist_matrix_gender + dist_matrix_education + dist_matrix_age)
+}
+```
+
+```{r}
+# Calculate combined distance matrices for each year
+combined_dist_matrix_2022_filtered <- calculate_combined_distance_matrix(df_wide_ms_2022_filtered, df_wide_gender_2022_filtered, df_wide_education_2022_filtered, df_wide_age_2022_filtered)
+
+combined_dist_matrix_2018_filtered <- calculate_combined_distance_matrix(df_wide_ms_2018_filtered, df_wide_gender_2018_filtered, df_wide_education_2018_filtered, df_wide_age_2018_filtered)
+
+combined_dist_matrix_2014_filtered <- calculate_combined_distance_matrix(df_wide_ms_2014_filtered, df_wide_gender_2014_filtered, df_wide_education_2014_filtered, df_wide_age_2014_filtered)
+```
+
+```{r}
+# Combine the distance matrices from 2014, 2018, and 2022 after filtering
+final_combined_dist_matrix_filtered <- combined_dist_matrix_2022_filtered + combined_dist_matrix_2018_filtered + combined_dist_matrix_2014_filtered
+```
+
+
+```{r}
+# Perform hierarchical clustering
+Z_final_combined <- hclust(as.dist(final_combined_dist_matrix_filtered), method='complete')
+```
+
+```{r}
+# Assigned each city into 3 clusters
+clusters_3 <- cutree(Z_final_combined, k = 3)
+```
+
+```{r}
+# Customize labels to show only top cities in 2022
+cluster_mapping <- data.frame(CITY_NAME = rownames(df_wide_ms_2022_filtered), Cluster = clusters_3)
+
+total_population <- df_long_2022 |>
+  group_by(CITY_NAME) |>
+  summarise(Total = n())
+cluster_mapping <- left_join(cluster_mapping, total_population, by = 'CITY_NAME')
+
+# Identify top 5 cities in 2022 in each cluster
+top_cities_per_cluster <- cluster_mapping |>
+  group_by(Cluster) |>
+  arrange(desc(Total)) |>
+  slice_head(n = 5)
+```
+
+
+
+```{r}
+# Create labels for cities with up to the fifth largest number of voters in each cluster in 2022
+Z_final_combined_2 <- Z_final_combined
+Z_final_combined_2$labels[!Z_final_combined_2$labels %in% top_cities_per_cluster$CITY_NAME] <- NA
+
+cluster_colors <- c("red", "blue", "green", "purple", "orange")
+
+plot(Z_final_combined_2, cex = 0.4, main = "Dendrogram with Top 5 Cities in Each Cluster", xlab ="")
+rect.hclust(Z_final_combined_2, k = 3, border = cluster_colors)
+```
+
+```{r}
+# Performing Multidimensional Scaling (MDS) using the same combined distance matrix as the dendrogram
+mds_same_as_dendrogram <- MASS::isoMDS(dist(final_combined_dist_matrix_filtered), k = 2)
+mds_result_same_as_dendrogram <- mds_same_as_dendrogram$points
+
+# Extracting the MDS coordinates
+mds_x_same_as_dendrogram <- mds_result_same_as_dendrogram[, 1]
+mds_y_same_as_dendrogram <- mds_result_same_as_dendrogram[, 2]
+
+mds_data <- data.frame(
+  X = mds_x_same_as_dendrogram,
+  Y = mds_y_same_as_dendrogram
+)
+```
+
+
+```{r}
+# Extracting continent information from df_2022
+continent_info_df <- df_2022 |>
+  distinct(CITY_NAME, CONTINENT)
+
+# Converting row names to a column
+mds_data <- mds_data |>
+  rownames_to_column(var = "CITY_NAME")
+
+# Performing a left join to merge mds_data with continent_info_df based on city name
+mds_data <- left_join(mds_data, continent_info_df, by = "CITY_NAME") 
+mds_data$CONTINENT <- as.factor(mds_data$CONTINENT)
+```
+
+```{r}
+# Extracting top 10 cities in 2022 by total population
+top10_cities<- head(cluster_mapping[order(-cluster_mapping$Total), 'CITY_NAME'], 10)
+```
+
+```{r}
+# Creating a scatter plot with color-coded continents and top 10 city name
+mds_data |>
+  ggplot(aes(x = X, y = Y, color = CONTINENT)) +
+  geom_point() +
+  geom_point(data = filter(mds_data, CITY_NAME %in% top10_cities),
+             aes(x = X, y = Y),
+             color = 'red', 
+             size = 3,  # Adjust the size of the emphasized points
+             shape = 16,  # Use a solid circle for emphasized points
+             stroke = 1,  # Add a black border around the red circles
+             show.legend = FALSE) +  # Prevent creating a legend for emphasized points
+  geom_text(data = filter(mds_data, CITY_NAME %in% top10_cities),
+            aes(label = CITY_NAME),
+            nudge_x = 0.1,  # Adjust the horizontal position of the labels
+            nudge_y = 0.1,  # Adjust the vertical position of the labels
+            size = 2,  # Adjust the size of the labels
+            color = 'black',  # Set the color of the labels to black
+            check_overlap = T) +  # Avoid overlapping labels
+  labs(x = "MDS Dimension 1", y = "MDS Dimension 2", title = "Scatter Plot of Cities by Continent (Aligned with Dendrogram)") +
+  theme_minimal()
+
+```
+
+
+
+
