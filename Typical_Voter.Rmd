@@ -1,0 +1,380 @@
+---
+title: "Typical_Voter"
+author: "Febriany Lete"
+date: "2023-12-21"
+output: html_document
+---
+
+```{r}
+# Load required libraries
+library(dplyr)
+library(cluster)
+library(stats)
+library(ggplot2)
+```
+Load the dataset
+```{r}
+df_2022 <- read.csv("CLEANZZ22.csv")
+df_2014 <- read.csv("CLEANZZ14.csv")
+df_2018 <- read.csv("CLEANZZ18.csv")
+```
+
+Next Create the Long Format Dataframe
+
+```{r}
+# Function to create a long format dataframe
+create_long_format <- function(df) {
+  return(df[rep(row.names(df), df$NUMBER_OF_VOTERS_PROFILE), ])
+}
+
+# Function to create wide format dataframes for each category
+create_wide_format <- function(df_long) {
+  df_wide_ms <- table(df_long$CITY_NAME, df_long$MARITAL_STATUS_CODE)
+  df_wide_gender <- table(df_long$CITY_NAME, df_long$GENDER_CODE)
+  df_wide_education <- table(df_long$CITY_NAME, df_long$EDUCATION_LEVEL_CODE)
+  df_wide_age <- table(df_long$CITY_NAME, df_long$AGE_GROUP_CODE)
+  return(list(df_wide_ms, df_wide_gender, df_wide_education, df_wide_age))
+}
+
+# Process 2022 data and filter cities
+df_long_2022 <- create_long_format(df_2022)
+df_wide_list_2022 <- create_wide_format(df_long_2022)
+df_wide_ms_2022 <- df_wide_list_2022[[1]]
+df_wide_gender_2022 <- df_wide_list_2022[[2]]
+df_wide_education_2022 <- df_wide_list_2022[[3]]
+df_wide_age_2022 <- df_wide_list_2022[[4]]
+
+```
+
+2022 as a baseline for the selected cities
+
+```{r}
+
+filtered_cities_2022 <- rownames(df_wide_age_2022[rowSums(df_wide_age_2022) >= 110, ])
+
+# Filter df_2014 and df_2018 based on filtered_cities_2022
+df_2014 <- df_2014 %>% filter(CITY_NAME %in% filtered_cities_2022)
+df_2018 <- df_2018 %>% filter(CITY_NAME %in% filtered_cities_2022)
+
+```
+
+Create wide format dataset for 2014 and 2018
+
+```{r}
+# Create 2014 wide format dataframes
+df_long_2014 <- create_long_format(df_2014)
+df_wide_list_2014 <- create_wide_format(df_long_2014)
+df_wide_ms_2014 <- df_wide_list_2014[[1]]
+df_wide_gender_2014 <- df_wide_list_2014[[2]]
+df_wide_education_2014 <- df_wide_list_2014[[3]]
+df_wide_age_2014 <- df_wide_list_2014[[4]]
+
+# Create 2018 wide format dataframes
+df_long_2018 <- create_long_format(df_2018)
+df_wide_list_2018 <- create_wide_format(df_long_2018)
+df_wide_ms_2018 <- df_wide_list_2018[[1]]
+df_wide_gender_2018 <- df_wide_list_2018[[2]]
+df_wide_education_2018 <- df_wide_list_2018[[3]]
+df_wide_age_2018 <- df_wide_list_2018[[4]]
+```
+
+Check the same cities for each dataset
+```{r}
+common_cities <- intersect(rownames(df_wide_ms_2022), intersect(rownames(df_wide_ms_2014), rownames(df_wide_ms_2018)))
+
+# Function to filter common cities
+filter_common_cities <- function(df_wide, common_cities) {
+  return(df_wide[common_cities, , drop = FALSE])
+}
+
+# Filter dataframes for 2022
+df_wide_ms_2022_filtered <- filter_common_cities(df_wide_ms_2022, common_cities)
+df_wide_gender_2022_filtered <- filter_common_cities(df_wide_gender_2022, common_cities)
+df_wide_education_2022_filtered <- filter_common_cities(df_wide_education_2022, common_cities)
+df_wide_age_2022_filtered <- filter_common_cities(df_wide_age_2022, common_cities)
+
+# Filter dataframes for 2014
+df_wide_ms_2014_filtered <- filter_common_cities(df_wide_ms_2014, common_cities)
+df_wide_gender_2014_filtered <- filter_common_cities(df_wide_gender_2014, common_cities)
+df_wide_education_2014_filtered <- filter_common_cities(df_wide_education_2014, common_cities)
+df_wide_age_2014_filtered <- filter_common_cities(df_wide_age_2014, common_cities)
+
+# Filter dataframes for 2018
+df_wide_ms_2018_filtered <- filter_common_cities(df_wide_ms_2018, common_cities)
+df_wide_gender_2018_filtered <- filter_common_cities(df_wide_gender_2018, common_cities)
+df_wide_education_2018_filtered <- filter_common_cities(df_wide_education_2018, common_cities)
+df_wide_age_2018_filtered <- filter_common_cities(df_wide_age_2018, common_cities)
+
+```
+
+convert to dataframe
+```{r}
+# Create data frames for the filtered wide-format data for 2022
+df_wide_ms_2022_filtered <- data.frame(df_wide_ms_2022_filtered)
+df_wide_gender_2022_filtered <- data.frame(df_wide_gender_2022_filtered)
+df_wide_education_2022_filtered <- data.frame(df_wide_education_2022_filtered)
+df_wide_age_2022_filtered <- data.frame(df_wide_age_2022_filtered)
+
+# Create data frames for the filtered wide-format data for 2014
+df_wide_ms_2014_filtered <- data.frame(df_wide_ms_2014_filtered)
+df_wide_gender_2014_filtered <- data.frame(df_wide_gender_2014_filtered)
+df_wide_education_2014_filtered <- data.frame(df_wide_education_2014_filtered)
+df_wide_age_2014_filtered <- data.frame(df_wide_age_2014_filtered)
+
+# Create data frames for the filtered wide-format data for 2018
+df_wide_ms_2018_filtered <- data.frame(df_wide_ms_2018_filtered)
+df_wide_gender_2018_filtered <- data.frame(df_wide_gender_2018_filtered)
+df_wide_education_2018_filtered <- data.frame(df_wide_education_2018_filtered)
+df_wide_age_2018_filtered <- data.frame(df_wide_age_2018_filtered)
+
+```
+
+Create long dataframe for all years for typical voter
+
+```{r}
+df_long <- rbind(df_long_2014, df_long_2018, df_long_2022)
+```
+
+Define cities by cluster (Cities from xiao's cluster)
+```{r}
+# Define the clusters of cities
+cluster_1_long <- c('ABU DHABI', 'AMMAN', 'ARTIGAS', 'ASUNCION', 'ATHENS', 'BANGKOK', 'BEIJING', 'BOGOTA', 'BRATISLAVA', 'BUDAPEST', 'CAIRO', 'CAPE TOWN', 'CARACAS', 'COCHABAMBA', 'COPENHAGEN', 'CORDOBA', 'DAMASCUS', 'DOHA', 'ENCARNACION', 'GEORGETOWN', 'HARTFORD', 'HELSINKI', 'HONG KONG', 'ISTANBUL', 'JAKARTA', 'KUALA LUMPUR', 'LA PAZ', 'LIMA', 'LJUBLJANA', 'LUANDA', 'MANAGUA', 'MANILA', 'MAPUTO', 'MENDOZA', 'MEXICO CITY', 'MONTEVIDEO', 'MOSCOW', 'OSLO', 'OTTAWA', 'PANAMA CITY', 'PORT OF SPAIN', 'PRAGUE', 'PRETORIA', 'QUITO', 'RAMALLAH', 'RIYADH', 'SAN JOSE', 'SAN SALVADOR', 'SANTA CRUZ DE LA SIERRA', 'SANTIAGO', 'SEOUL', 'SHANGHAI', 'SINGAPORE', 'STOCKHOLM', 'TAIPEI', 'TEGUCIGALPA', 'TEL AVIV', 'VIENNA', 'WARSAW', 'WELLINGTON')
+cluster_2_long <- c('CAYENNE', 'CIUDAD DEL ESTE', 'HAMAMATSU', 'NAGOYA', 'PARAMARIBO', 'TOKYO')
+cluster_3_long <- c('ATLANTA', 'BARCELONA', 'BEIRUT', 'BERLIN', 'BOSTON', 'BRUSSELS', 'BUENOS AIRES', 'CHICAGO', 'DUBLIN', 'FRANKFURT', 'GENEVA', 'HOUSTON', 'LISBON', 'LONDON', 'LOS ANGELES', 'MADRID', 'MIAMI', 'MILAN', 'MONTREAL', 'MUNICH', 'NEW YORK', 'PARIS', 'PORTO', 'ROME', 'ROTTERDAM', 'SAN FRANCISCO', 'SYDNEY', 'TORONTO', 'VANCOUVER', 'WASHINGTON', 'ZURICH')
+
+# Create a new "clusters" column based on matching "2022_Var1" with the clusters
+df_long$cluster <- ifelse(df_long$CITY_NAME %in% cluster_3_long, "Cluster 3",
+                     ifelse(df_long$CITY_NAME %in% cluster_2_long, "Cluster 2", ifelse(df_long$CITY_NAME %in% cluster_1_long, "Cluster 1", "NA")))
+```
+
+Plot for Age Distribution By Cluster
+```{r}
+df_long %>%
+  filter(cluster != "NA") %>%
+  filter(AGE_GROUP != "Invalid") %>%
+  group_by(cluster, AGE_GROUP) %>%
+  summarise(NUMBER_OF_VOTERS_PROFILE = sum(NUMBER_OF_VOTERS_PROFILE), .groups = "drop")%>%
+  group_by(cluster) %>%
+  mutate(Percentage = NUMBER_OF_VOTERS_PROFILE / sum(NUMBER_OF_VOTERS_PROFILE) * 100) %>%
+  mutate(AGE_GROUP = factor(AGE_GROUP, levels = c("16", "17", "18", "19", "20", "21-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84", "85-89", "90-94", "95-99", "100+"))) %>%
+  ggplot(aes(x = AGE_GROUP, y = Percentage, fill = cluster)) +
+  geom_col(position = "dodge") +
+  labs(title = "Voter distribution by Age Category",
+       x = "Age Category",
+       y = "Percentage of Voters") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+        axis.text.y = element_text(size = 13),
+        legend.position = "bottom")
+```
+Plot for Education Distribution By Cluster
+
+```{r}
+df_long %>%
+  filter(cluster != "NA") %>%
+  group_by(cluster, EDUCATION_LEVEL_CODE) %>%
+  summarise(NUMBER_OF_VOTERS_PROFILE = sum(NUMBER_OF_VOTERS_PROFILE), .groups = "drop")%>%
+  group_by(cluster) %>%
+  mutate(Percentage = NUMBER_OF_VOTERS_PROFILE / sum(NUMBER_OF_VOTERS_PROFILE) * 100) %>%
+  ggplot(aes(x = factor(EDUCATION_LEVEL_CODE, levels = c("1", "2", "3", "4", "5", "6", "7", "8")), y = Percentage, fill = cluster)) +
+  geom_col(position = "dodge") +
+  labs(title = "Voter distribution by Education",
+       x = "Education",
+       y = "Percentage of Voters") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_x_discrete(labels = c("1" = "ILLITERATE", "2" = "LITERATE", "3" = "INCOMPLETE ELEMENTARY", "4" = "COMPLETE ELEMENTARY", "5" = "INCOMPLETE HIGH SCHOOL", "6" = "HIGH SCHOOL", "7" = "INCOMPLETE COLLEGE", "8" = "COLLEGE/UNIVERSITY"),
+                    limits = c("1", "2", "3", "4", "5", "6", "7", "8")) + 
+  theme_minimal() +
+  theme(plot.title = element_text(size = 13),
+        axis.title.x = element_text(size = 11),
+        axis.title.y = element_text(size = 11),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+        axis.text.y = element_text(size = 8),
+        legend.position = "bottom")
+```
+Recategory age group for the mosaic plot
+```{r}
+# Create a new variable "RECAT_AGE_GROUP" with the recategorized age groups
+df_long$RECAT_AGE_GROUP <- cut(df_long$AGE_GROUP_CODE, 
+                               breaks = c(0, 2529, 3034, 3539, 4044, 4549, 5054, 5559, 6064, 6500, Inf), 
+                               labels = c("<2500", "2529", "3034", "3539", "4044", "4549", "5054", "5559", "6064", ">=6500"),
+                               right = FALSE)
+
+df_long <- subset(df_long, `RECAT_AGE_GROUP` != -3)
+```
+
+
+Typical Voter By Age and Education in  mosaic plot for each cluster
+
+```{r}
+#Cluster 1
+mosaic_data1 <- df_long %>%
+  filter(cluster == "Cluster 1" & EDUCATION_LEVEL_CODE != 0)
+
+# Define custom labels for EDUCATION_LEVEL_CODE values
+custom_labels <- c("ILLITERATE", "LITERATE", "INCOMPLETE ELEMENTARY", "COMPLETE ELEMENTARY", "INCOMPLETE HIGH SCHOOL", "HIGH SCHOOL", "INCOMPLETE COLLEGE/UNIVERSITY", "COLLEGE/UNIVERSITY")
+
+# Create a factor variable with custom labels
+mosaic_data1$Education_Label <- factor(mosaic_data1$EDUCATION_LEVEL_CODE,
+                                        levels = 1:8,
+                                        labels = custom_labels)
+
+# Create a vector of your variable values
+values <- c("<2500", "2529", "3034", "3539", "4044", "4549", "5054", "5559", "6064", ">=6500")
+
+# Create a vector of labels corresponding to each value
+labels <- c("<25", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65+")
+
+# Use the factor function to assign labels to the variable in filtered_data
+mosaic_data1$RECAT_AGE_GROUP <- factor(mosaic_data1$RECAT_AGE_GROUP, levels = values, labels = labels)
+
+# Create a mosaic plot with increased top margin for axis labels
+mosaicplot(table(mosaic_data1$RECAT_AGE_GROUP, mosaic_data1$Education_Label),
+           main = "Voter's Education by Age Category in Cluster 1",
+           xlab = "Education Grouped by Age Category",
+           ylab = "Percentage of Voters",
+           col = c("lightblue", "lightgreen", "lightpink", "lightyellow"),
+           las = 2, cex.axis = 0.7)
+
+#Cluster 2
+mosaic_data2 <- df_long %>%
+  filter(cluster == "Cluster 2" & EDUCATION_LEVEL_CODE != 0)
+
+# Define custom labels for EDUCATION_LEVEL_CODE values
+custom_labels <- c("ILLITERATE", "LITERATE", "INCOMPLETE ELEMENTARY", "COMPLETE ELEMENTARY", "INCOMPLETE HIGH SCHOOL", "HIGH SCHOOL", "INCOMPLETE COLLEGE/UNIVERSITY", "COLLEGE/UNIVERSITY")
+
+# Create a factor variable with custom labels
+mosaic_data2$Education_Label <- factor(mosaic_data2$EDUCATION_LEVEL_CODE,
+                                        levels = 1:8,
+                                        labels = custom_labels)
+
+# Create a vector of your variable values
+values <- c("<2500", "2529", "3034", "3539", "4044", "4549", "5054", "5559", "6064", ">=6500")
+
+# Create a vector of labels corresponding to each value
+labels <- c("<25", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65+")
+
+# Use the factor function to assign labels to the variable in filtered_data
+mosaic_data2$RECAT_AGE_GROUP <- factor(mosaic_data2$RECAT_AGE_GROUP, levels = values, labels = labels)
+
+
+# Create a mosaic plot with increased top margin for axis labels
+mosaicplot(table(mosaic_data2$RECAT_AGE_GROUP, mosaic_data2$Education_Label),
+           main = "Voter's Education by Age Category in Cluster 2",
+           xlab = "Education Grouped by Age Category",
+           ylab = "Percentage of Voters",
+           col = c("lightblue", "lightgreen", "lightpink", "lightyellow"),
+           las = 2, cex.axis = 0.7)
+
+#Cluster 3
+mosaic_data3 <- df_long %>%
+  filter(cluster == "Cluster 3" & EDUCATION_LEVEL_CODE != 0)
+
+# Define custom labels for EDUCATION_LEVEL_CODE values
+custom_labels <- c("ILLITERATE", "LITERATE", "INCOMPLETE ELEMENTARY", "COMPLETE ELEMENTARY", "INCOMPLETE HIGH SCHOOL", "HIGH SCHOOL", "INCOMPLETE COLLEGE/UNIVERSITY", "COLLEGE/UNIVERSITY")
+
+# Create a factor variable with custom labels
+mosaic_data3$Education_Label <- factor(mosaic_data3$EDUCATION_LEVEL_CODE,
+                                        levels = 1:8,
+                                        labels = custom_labels)
+
+# Create a vector of your variable values
+values <- c("<2500", "2529", "3034", "3539", "4044", "4549", "5054", "5559", "6064", ">=6500")
+
+# Create a vector of labels corresponding to each value
+labels <- c("<25", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59", "60-64", "65+")
+
+# Use the factor function to assign labels to the variable in filtered_data
+mosaic_data3$RECAT_AGE_GROUP <- factor(mosaic_data3$RECAT_AGE_GROUP, levels = values, labels = labels)
+
+# Create a mosaic plot with increased top margin for axis labels
+mosaicplot(table(mosaic_data3$RECAT_AGE_GROUP, mosaic_data3$Education_Label),
+           main = "Voter's Education by Age Category in Cluster 3",
+           xlab = "Education Grouped by Age Category",
+           ylab = "Percentage of Voters",
+           col = c("lightblue", "lightgreen", "lightpink", "lightyellow"),
+           las = 2, cex.axis = 0.7)
+```
+Typical Voter By Age and Gender in bar chart for each cluster
+
+```{r}
+#Cluster 1
+
+df_long %>%
+  filter(cluster == "Cluster 1") %>%
+  group_by(RECAT_AGE_GROUP, GENDER) %>%
+  summarise(NUMBER_OF_VOTERS_PROFILE = n(), .groups = "drop") %>%
+  mutate(Percentage = NUMBER_OF_VOTERS_PROFILE / sum(NUMBER_OF_VOTERS_PROFILE) * 100) %>%
+  ggplot(aes(x = RECAT_AGE_GROUP, y = Percentage, fill = GENDER)) +
+  geom_col() +  # No need for "position = 'dodge'" here
+  labs(title = "Voter's Gender by Age Category in Cluster 1",
+       x = "Age Category",
+       y = "Percentage of Voters",
+       fill = "Gender") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+   scale_x_discrete(labels = c("<2500" = "<25","2529" = "25-29", "3034" = "30-34", "3539" = "35-39", "4044" = "40-44", "4549" = "45-49", "5054" = "50-54", "5559" = "55-59", "6064" = "60-64", ">=6500" = "65+")) +
+  guides(fill = guide_legend(title = "Gender")) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+        axis.text.y = element_text(size = 13),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10),
+        legend.position = "bottom")
+
+#Cluster 2
+df_long %>%
+  filter(cluster == "Cluster 2") %>%
+  group_by(RECAT_AGE_GROUP, GENDER) %>%
+  summarise(NUMBER_OF_VOTERS_PROFILE = n(), .groups = "drop") %>%
+  mutate(Percentage = NUMBER_OF_VOTERS_PROFILE / sum(NUMBER_OF_VOTERS_PROFILE) * 100) %>%
+  ggplot(aes(x = RECAT_AGE_GROUP, y = Percentage, fill = GENDER)) +
+  geom_col() +  # No need for "position = 'dodge'" here
+  labs(title = "Voter's Gender by Age Category in Cluster 2",
+       x = "Age Category",
+       y = "Percentage of Voters",
+       fill = "Gender") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+   scale_x_discrete(labels = c("<2500" = "<25","2529" = "25-29", "3034" = "30-34", "3539" = "35-39", "4044" = "40-44", "4549" = "45-49", "5054" = "50-54", "5559" = "55-59", "6064" = "60-64", ">=6500" = "65+")) +
+  guides(fill = guide_legend(title = "Gender")) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+        axis.text.y = element_text(size = 13),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10),
+        legend.position = "bottom")
+
+#Cluster 3
+df_long %>%
+  filter(cluster == "Cluster 3") %>%
+  group_by(RECAT_AGE_GROUP, GENDER) %>%
+  summarise(NUMBER_OF_VOTERS_PROFILE = n(), .groups = "drop") %>%
+  mutate(Percentage = NUMBER_OF_VOTERS_PROFILE / sum(NUMBER_OF_VOTERS_PROFILE) * 100) %>%
+  ggplot(aes(x = RECAT_AGE_GROUP, y = Percentage, fill = GENDER)) +
+  geom_col() +  # No need for "position = 'dodge'" here
+  labs(title = "Voter's Gender by Age Category in Cluster 3",
+       x = "Age Category",
+       y = "Percentage of Voters",
+       fill = "Gender") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+   scale_x_discrete(labels = c("<2500" = "<25","2529" = "25-29", "3034" = "30-34", "3539" = "35-39", "4044" = "40-44", "4549" = "45-49", "5054" = "50-54", "5559" = "55-59", "6064" = "60-64", ">=6500" = "65+")) +
+  guides(fill = guide_legend(title = "Gender")) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 13),
+        axis.text.y = element_text(size = 13),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10),
+        legend.position = "bottom")
+```
+
